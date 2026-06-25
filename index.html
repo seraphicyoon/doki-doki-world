@@ -6,7 +6,6 @@
   <title>Doki Doki World | K-Pop Album Shop</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
-  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,11 +95,29 @@
     try {
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+      // 1. Cargar el Video de Fondo desde Supabase configuracion
+      async function cargarVideoHero() {
+        const { data: config } = await supabaseClient
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'video_hero')
+          .single();
+          
+        if (config && config.valor) {
+          const videoElement = document.querySelector('video source');
+          if (videoElement) {
+            videoElement.src = config.valor;
+            videoElement.parentElement.load(); // Actualizar el reproductor en vivo
+          }
+        }
+      }
+
+      // 2. Cargar los Productos desde la tabla "Productos" (P mayúscula)
       async function cargarProductos() {
         const grid = document.getElementById('grid-productos');
 
         const { data: productos, error } = await supabaseClient
-          .from('productos')
+          .from('Productos')
           .select('*')
           .order('id', { ascending: true });
 
@@ -113,7 +130,7 @@
           return;
         }
 
-        grid.innerHTML = ''; // Limpiar el mensaje de carga
+        grid.innerHTML = ''; 
 
         if (!productos || productos.length === 0) {
           grid.innerHTML = `
@@ -123,7 +140,6 @@
           return;
         }
 
-        // Armado automático de las tarjetas con tus datos reales
         productos.forEach(prod => {
           const tieneEtiqueta = prod.etiqueta ? true : false;
           const esSale = prod.etiqueta?.toLowerCase() === 'sale';
@@ -150,7 +166,10 @@
         });
       }
 
+      // Inicializar ambos elementos
+      cargarVideoHero();
       cargarProductos();
+      
     } catch (err) {
       console.error('Error crítico de inicialización:', err);
       document.getElementById('grid-productos').innerHTML = `
