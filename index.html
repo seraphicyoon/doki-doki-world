@@ -10,7 +10,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -33,7 +33,6 @@
 </head>
 <body class="bg-dokiBackground text-dokiDark antialiased">
 
-  <!-- ================= HEADER / NAVBAR ================= -->
   <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
@@ -54,7 +53,6 @@
     </div>
   </nav>
 
-  <!-- ================= HERO SECTION (YOUTUBE EMBED HD) ================= -->
   <section id="hero-container" class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black">
     <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none flex items-center justify-center scale-110"></div>
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/40 backdrop-blur-[1px] z-10"></div>
@@ -65,7 +63,6 @@
     </div>
   </section>
 
-  <!-- ================= CATALOGUE SECTION ================= -->
   <section class="max-w-7xl mx-auto px-6 py-20">
     <div class="flex items-end justify-between mb-12">
       <div>
@@ -90,7 +87,6 @@
       let videoId = 'QRSSyK8CgU0'; // MEOVV por defecto
       
       if (config && config.valor) {
-        // Expresión regular mejorada para detectar links normales, embed e incluso links de celular (youtu.be)
         const match = config.valor.match(/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
         if (match && match[1]) {
           videoId = match[1];
@@ -99,11 +95,12 @@
         }
       }
 
+      // Se añadió 'pointer-events: none;' explícito para congelar los toques y clics
       wrapper.innerHTML = `
         <iframe class="w-full h-full pointer-events-none" 
           src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&vq=hd1080&wmode=transparent&playsinline=1" 
           frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
-          style="object-fit: cover; width: 100vw; height: 56.25vw; min-height: 70vh; min-width: 125%;">
+          style="object-fit: cover; width: 100vw; height: 56.25vw; min-height: 70vh; min-width: 125%; pointer-events: none;">
         </iframe>
       `;
     }
