@@ -31,9 +31,10 @@
     }
   </script>
 </head>
-<body class="bg-dokiBackground text-dokiDark antialiased">
+<body class="bg-dokiBackground text-dokiDark antialiased overflow-x-hidden">
 
-  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-100">
+  <!-- ================= HEADER / NAVBAR ================= -->
+  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-40 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Inicio</a>
@@ -47,15 +48,46 @@
       <div class="flex items-center space-x-6 text-sm font-light">
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
         
+        <!-- BOTÓN DE CUENTA INTELIGENTE -->
         <a id="nav-auth-btn" href="account/login.html" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase font-medium text-neutral-600">Cuenta</a>
         
-        <div class="relative cursor-pointer hover:text-dokiRosa transition-colors duration-300">
+        <!-- ICONO DE CARRITO CON CONTADOR -->
+        <div onclick="toggleCarrito()" class="relative cursor-pointer hover:text-dokiRosa transition-colors duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-dokiRosa text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- ================= CARRITO LATERAL FLOTANTE ================= -->
+  <div id="sidebar-carrito" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-neutral-100">
+    <div class="p-6 border-b border-neutral-100 flex items-center justify-between">
+      <div>
+        <h3 class="font-serif italic text-lg text-dokiDark">Tu Carrito</h3>
+        <p class="text-[9px] tracking-widest uppercase text-neutral-400">Doki Doki World</p>
+      </div>
+      <button onclick="toggleCarrito()" class="text-xs uppercase tracking-widest text-neutral-400 hover:text-dokiDark">Cerrar ✕</button>
+    </div>
+
+    <!-- Contenedor de lista de items -->
+    <div id="carrito-items" class="flex-grow overflow-y-auto p-6 space-y-4 divide-y divide-neutral-50">
+      <p class="text-xs font-light text-neutral-400 text-center py-12">Tu carrito está vacío actualmente.</p>
+    </div>
+
+    <!-- Total y Botón de checkout -->
+    <div class="p-6 border-t border-neutral-100 bg-neutral-50/50 space-y-4">
+      <div class="flex items-center justify-between text-xs tracking-wide uppercase">
+        <span class="font-light text-neutral-500">Subtotal:</span>
+        <span id="carrito-total" class="font-semibold text-dokiDark">$ 0.00 MXN</span>
+      </div>
+      <button onclick="irAlCheckout()" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition-all duration-300 shadow-sm">Proceder al Pago</button>
+    </div>
+  </div>
+  <!-- Fondo oscuro cuando el carrito esté abierto -->
+  <div id="cart-overlay" onclick="toggleCarrito()" class="fixed top-0 left-0 w-full h-full bg-black/20 backdrop-blur-[1px] z-40 hidden"></div>
+
+  <!-- ================= HERO SECTION ================= -->
   <section id="hero-container" class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black">
     <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none flex items-center justify-center"></div>
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/40 backdrop-blur-[1px] z-10 pointer-events-none"></div>
@@ -66,6 +98,7 @@
     </div>
   </section>
 
+  <!-- ================= CATALOGUE SECTION ================= -->
   <section class="max-w-7xl mx-auto px-6 py-20">
     <div class="flex items-end justify-between mb-12">
       <div>
@@ -78,6 +111,7 @@
     </div>
   </section>
 
+  <!-- ================= SCRIPTS ================= -->
   <script>
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
@@ -101,7 +135,6 @@
       const { data: productos, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: true });
 
       if (error) {
-        console.error(error);
         grid.innerHTML = `<p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">Error al conectar con el inventario.</p>`;
         return;
       }
@@ -133,23 +166,76 @@
       });
     }
 
-    // Cambia el enlace a account/index.html si está logueado
     async function evaluarSesionNav() {
       const authBtn = document.getElementById('nav-auth-btn');
       const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) { authBtn.innerText = "Mi Perfil"; authBtn.href = "account/index.html"; } 
+      else { authBtn.innerText = "Cuenta"; authBtn.href = "account/login.html"; }
+    }
 
-      if (session) {
-        authBtn.innerText = "Mi Perfil";
-        authBtn.href = "account/index.html";
-      } else {
-        authBtn.innerText = "Cuenta";
-        authBtn.href = "account/login.html";
+    // LÓGICA DEL CARRITO GLOBAL
+    function toggleCarrito() {
+      const sidebar = document.getElementById('sidebar-carrito');
+      const overlay = document.getElementById('cart-overlay');
+      sidebar.classList.toggle('translate-x-full');
+      overlay.classList.toggle('hidden');
+      if (!sidebar.classList.contains('translate-x-full')) { renderizarCarrito(); }
+    }
+
+    function renderizarCarrito() {
+      const cart = JSON.parse(localStorage.getItem('doki_cart')) || [];
+      const contenedor = document.getElementById('carrito-items');
+      const totalText = document.getElementById('carrito-total');
+      const countBadge = document.getElementById('cart-count');
+
+      // Actualizar burbuja flotante
+      const totalItems = cart.reduce((acc, item) => acc + item.cantidad, 0);
+      if(totalItems > 0) { countBadge.innerText = totalItems; countBadge.classList.remove('hidden'); }
+      else { countBadge.classList.add('hidden'); }
+
+      if(cart.length === 0) {
+        contenedor.innerHTML = '<p class="text-xs font-light text-neutral-400 text-center py-12">Tu carrito está vacío actualmente.</p>';
+        totalText.innerText = "$ 0.00 MXN";
+        return;
       }
+
+      contenedor.innerHTML = '';
+      let subtotal = 0;
+
+      cart.forEach((item, index) => {
+        subtotal += item.precio * item.cantidad;
+        contenedor.innerHTML += `
+          <div class="flex items-center space-x-4 pt-4 first:pt-0">
+            <img src="${item.imagen}" class="w-14 h-14 object-cover rounded-xl bg-neutral-50 flex-shrink-0">
+            <div class="flex-grow min-w-0">
+              <h4 class="text-xs font-medium text-neutral-800 truncate">${item.titulo}</h4>
+              <p class="text-[10px] text-neutral-400 mt-0.5">$ ${item.precio} MXN x ${item.cantidad}</p>
+            </div>
+            <button onclick="eliminarDelCarrito(${index})" class="text-[11px] text-neutral-300 hover:text-red-500 transition px-2">✕</button>
+          </div>
+        `;
+      });
+
+      totalText.innerText = `$ ${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+    }
+
+    function eliminarDelCarrito(index) {
+      let cart = JSON.parse(localStorage.getItem('doki_cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('doki_cart', JSON.stringify(cart));
+      renderizarCarrito();
+    }
+
+    function irAlCheckout() {
+      const cart = JSON.parse(localStorage.getItem('doki_cart')) || [];
+      if(cart.length === 0) { alert('Tu carrito está vacío.'); return; }
+      window.location.href = 'checkout.html'; // Próxima página a crear
     }
 
     cargarVideoHero();
     cargarProductos();
     evaluarSesionNav();
+    renderizarCarrito(); // Cargar burbuja inicial
   </script>
 </body>
 </html>
