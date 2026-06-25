@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doki Doki World | K-Pop Album Shop</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Fuentes elegantes y minimalistas -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 
-  <!-- Configuración personalizada de Tailwind con la paleta de tu logo -->
   <script>
     tailwind.config = {
       theme: {
@@ -35,28 +34,23 @@
 </head>
 <body class="bg-dokiBackground text-dokiDark antialiased">
 
-  <!-- ================= HEADER / NAVBAR ELEGANTE ================= -->
   <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       
-      <!-- Enlaces Izquierda -->
       <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Inicio</a>
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Preventas</a>
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Categorías</a>
       </div>
 
-      <!-- LOGO CENTRAL -->
       <div class="text-center">
         <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
         <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
       </div>
 
-      <!-- Iconos Derecha -->
       <div class="flex items-center space-x-6 text-sm font-light">
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
         <div class="relative cursor-pointer hover:text-dokiRosa transition-colors duration-300">
-          <!-- Icono de Bolsa de compras minimalista -->
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
           </svg>
@@ -66,18 +60,14 @@
     </div>
   </nav>
 
-  <!-- ================= HERO SECTION (VIDEO BACKGROUND) ================= -->
   <section class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
     
-    <!-- Video de Fondo en Bucle (Coloca tu link de video en src más adelante) -->
     <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
       <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4" type="video/mp4" />
     </video>
 
-    <!-- Capa oscura traslúcida usando el tono de la cabeza del gato (#111111) -->
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/30 backdrop-blur-[1px] z-10"></div>
 
-    <!-- Contenido encima del video -->
     <div class="relative z-20 text-center text-white px-4 max-w-2xl">
       <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
       <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">
@@ -90,101 +80,74 @@
 
   </section>
 
-  <!-- ================= SECCIÓN DE PREVENTAS (CATÁLOGO ELEGANTE) ================= -->
   <section class="max-w-7xl mx-auto px-6 py-20">
     
-    <!-- Título de la sección -->
     <div class="flex items-end justify-between mb-12">
       <div>
         <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-2">Próximos Lanzamientos</span>
         <h2 class="font-serif italic text-3xl tracking-wide">Preventas Especiales</h2>
       </div>
-      <a href="#" class="text-xs tracking-widest uppercase font-light text-neutral-500 hover:text-dokiRosa transition-colors duration-300 border-b border-neutral-200 pb-1">
-        Ver Todo →
-      </a>
     </div>
 
-    <!-- Cuadrícula de Productos (Grid elegante) -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-      
-      <!-- TARJETA 1 (Ejemplo con etiqueta de Preventa) -->
-      <div class="group cursor-pointer">
-        <!-- Contenedor de la Imagen Fijo Cuadrado con bordes suaves -->
-        <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" 
-               alt="Album Cover" 
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          <!-- Etiqueta estilizada usando el rosa de tu logo -->
-          <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-dokiRosa text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm border border-neutral-100">
-            Pre-Order
-          </span>
-        </div>
-        <!-- Datos del Producto -->
-        <div class="space-y-1 px-1">
-          <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">Enhypen</p>
-          <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">
-            Bazaar Star : The Cosmic
-          </h3>
-          <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ 1,590.00 MXN</p>
-        </div>
-      </div>
-
-      <!-- TARJETA 2 (Ejemplo con etiqueta de Autografiado usando el lila) -->
-      <div class="group cursor-pointer">
-        <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-          <img src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&w=600&q=80" 
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-dokiLila text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm border border-neutral-100">
-            Signed
-          </span>
-        </div>
-        <div class="space-y-1 px-1">
-          <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">P1Harmony</p>
-          <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">
-            9th Mini Album [UNIQUE]
-          </h3>
-          <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ 1,180.00 MXN</p>
-        </div>
-      </div>
-
-      <!-- TARJETA 3 -->
-      <div class="group cursor-pointer">
-        <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-          <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=600&q=80" 
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        </div>
-        <div class="space-y-1 px-1">
-          <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">Ateez</p>
-          <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">
-            Golden Hour : Part.5 (CDP ver.)
-          </h3>
-          <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ 4,460.00 MXN</p>
-        </div>
-      </div>
-
-      <!-- TARJETA 4 (Ejemplo en Oferta) -->
-      <div class="group cursor-pointer">
-        <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-          <img src="https://images.unsplash.com/photo-1618005198143-e5283b519a7f?auto=format&fit=crop&w=600&q=80" 
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          <span class="absolute top-3 left-3 bg-[#E55B92] text-white text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm">
-            Sale
-          </span>
-        </div>
-        <div class="space-y-1 px-1">
-          <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">BoyNextDoor</p>
-          <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">
-            1st Studio Album [HOME]
-          </h3>
-          <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">
-            <span class="text-dokiRosa mr-1">$ 1,520.00</span>
-            <span class="line-through text-neutral-400 text-[11px]">$ 1,900.00</span>
-          </p>
-        </div>
-      </div>
-
+    <div id="grid-productos" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+      <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">Cargando catálogo...</p>
     </div>
   </section>
+
+  <script>
+    // Configuración con tus llaves reales del panel de Supabase
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE
+
+https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/'; // Pega aquí tu Anon Key completa
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function cargarProductos() {
+      // Jalar datos en vivo de tu tabla 'productos' por ID
+      const { data: productos, error } = await supabaseClient
+        .from('productos')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) {
+        console.error('Error al conectar con el catálogo:', error);
+        return;
+      }
+
+      const grid = document.getElementById('grid-productos');
+      grid.innerHTML = ''; // Limpiar el cargando
+
+      // Construcción automatizada de tus tarjetas elegantes
+      productos.forEach(prod => {
+        const tieneEtiqueta = prod.etiqueta ? true : false;
+        const esSale = prod.etiqueta?.toLowerCase() === 'sale';
+        const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
+
+        const tarjetaHTML = `
+          <div class="group cursor-pointer">
+            <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
+              <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              ${tieneEtiqueta ? `
+                <span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">
+                  ${prod.etiqueta}
+                </span>
+              ` : ''}
+            </div>
+            <div class="space-y-1 px-1">
+              <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista}</p>
+              <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
+              <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
+            </div>
+          </div>
+        `;
+        grid.innerHTML += tarjetaHTML;
+      });
+    }
+
+    // Iniciar la carga al abrir la web
+    cargarProductos();
+  </script>
 
 </body>
 </html>
