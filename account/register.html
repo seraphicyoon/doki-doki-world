@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doki Doki | Crear Cuenta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { dokiBackground: '#FBF9FC', dokiDark: '#111111', dokiRosa: '#E55B92', dokiLila: '#934B8B' },
+          fontFamily: { sans: ['Montserrat', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dokiBackground text-dokiDark antialiased min-h-screen flex flex-col justify-center items-center p-6">
+
+  <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-sm border border-neutral-100 space-y-6">
+    <div class="text-center">
+      <span class="font-serif italic text-3xl tracking-wide">doki doki</span>
+      <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
+      <h2 class="text-xs tracking-widest uppercase font-light text-neutral-500 mt-4">Crear una nueva cuenta</h2>
+    </div>
+
+    <form id="register-form" class="space-y-4" onsubmit="registrarUsuario(event)">
+      <div>
+        <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Correo Electrónico</label>
+        <input type="email" id="reg-email" required class="w-full p-3 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-dokiRosa bg-neutral-50/50" placeholder="tu@correo.com">
+      </div>
+      <div>
+        <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Contraseña</label>
+        <input type="password" id="reg-password" required minlength="6" class="w-full p-3 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-dokiRosa bg-neutral-50/50" placeholder="Mínimo 6 caracteres">
+      </div>
+
+      <button type="submit" id="btn-register" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition-all duration-300 shadow-sm pt-3">Registrarse</button>
+    </form>
+
+    <div class="text-center text-xs font-light text-neutral-400 border-t pt-4 border-neutral-100">
+      ¿Ya tienes cuenta? <a href="login.html" class="text-dokiRosa font-medium hover:underline">Inicia sesión aquí</a>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function registrarUsuario(e) {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-register');
+
+      btn.disabled = true;
+      btn.innerText = "PROCESANDO...";
+
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+      btn.disabled = false;
+      btn.innerText = "REGISTRARSE";
+
+      if (error) {
+        alert("Error al registrarte: " + error.message);
+      } else {
+        alert("¡Registro exitoso! Por favor revisa tu correo electrónico para confirmar tu cuenta antes de iniciar sesión.");
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+</body>
+</html>
