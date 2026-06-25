@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doki Doki World | Checkout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;500;600&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { dokiBackground: '#FBF9FC', dokiDark: '#111111', dokiRosa: '#E55B92', dokiLila: '#934B8B' },
+          fontFamily: { sans: ['Montserrat', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dokiBackground text-dokiDark antialiased min-h-screen flex flex-col">
+
+  <!-- NAVBAR MINI -->
+  <nav class="w-full bg-dokiBackground border-b border-neutral-100">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="index.html" class="text-xs tracking-widest uppercase font-light hover:text-dokiRosa transition">← Volver al inicio</a>
+      <div class="text-center">
+        <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
+        <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
+      </div>
+      <div class="w-24"></div> 
+    </div>
+  </nav>
+
+  <!-- CONTENEDOR CHECKOUT -->
+  <main class="max-w-6xl w-full mx-auto px-6 py-12 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- LADO IZQUIERDO: DATOS DE ENVÍO -->
+    <div class="lg:col-span-7 space-y-6">
+      <div class="bg-white border border-neutral-100 rounded-3xl p-8 shadow-sm space-y-6">
+        <h2 class="font-serif italic text-2xl border-b pb-4 border-neutral-50">Información de Entrega</h2>
+        
+        <!-- Alerta de sesión -->
+        <div id="checkout-auth-alert" class="hidden p-4 bg-amber-50 text-amber-800 rounded-xl text-xs font-medium">
+          ⚠️ Para guardar tus datos automáticamente, te recomendamos <a href="account/login.html" class="underline text-dokiRosa">Iniciar Sesión</a>. Si no, puedes rellenarlos aquí abajo.
+        </div>
+
+        <!-- Formulario completo de entrega -->
+        <form id="form-checkout-envio" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Nombre *</label>
+              <input type="text" id="chk-nombre" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+            </div>
+            <div>
+              <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Apellidos *</label>
+              <input type="text" id="chk-apellido" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+            </div>
+          </div>
+
+          <div id="campos-direccion-postal" class="space-y-4">
+            <div>
+              <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Dirección de la Calle *</label>
+              <input type="text" id="chk-calle" placeholder="Número, calle y colonia" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Ciudad / Municipio *</label>
+                <input type="text" id="chk-ciudad" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+              </div>
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Estado *</label>
+                <input type="text" id="chk-estado" placeholder="Ej. Tamaulipas" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Código Postal *</label>
+                <input type="text" id="chk-cp" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+              </div>
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">País *</label>
+                <input type="text" id="chk-pais" value="México" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Teléfono Móvil *</label>
+            <input type="tel" id="chk-telefono" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- LADO DERECHO: MÉTODO DE ENVÍO Y RESUMEN -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- SELECCIÓN MÉTODO DE ENVÍO -->
+      <div class="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm space-y-4">
+        <h3 class="font-serif italic text-xl border-b pb-2 border-neutral-50">Opciones de Envío</h3>
+        
+        <div class="space-y-2">
+          <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer hover:bg-neutral-50/50 transition">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="envio_opcion" value="100" checked onclick="calcularTotalesCheckout(100, 'postal')" class="text-dokiDark focus:ring-0">
+              <span class="text-xs font-medium text-neutral-700">Correos de México</span>
+            </div>
+            <span class="text-xs font-semibold text-neutral-600">$100.00</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer hover:bg-neutral-50/50 transition">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="envio_opcion" value="200" onclick="calcularTotalesCheckout(200, 'postal')" class="text-dokiDark focus:ring-0">
+              <span class="text-xs font-medium text-neutral-700">Paquetería Privada (2-3 Días)</span>
+            </div>
+            <span class="text-xs font-semibold text-neutral-600">$200.00</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer hover:bg-neutral-50/50 transition">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="envio_opcion" value="270" onclick="calcularTotalesCheckout(270, 'postal')" class="text-dokiDark focus:ring-0">
+              <span class="text-xs font-medium text-neutral-700">Envío Express</span>
+            </div>
+            <span class="text-xs font-semibold text-neutral-600">$270.00</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer hover:bg-neutral-50/50 transition">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="envio_opcion" value="0" onclick="calcularTotalesCheckout(0, 'local')" class="text-dokiDark focus:ring-0">
+              <span class="text-xs font-medium text-neutral-700">Entrega Personal (Tampico)</span>
+            </div>
+            <span class="text-xs font-semibold text-emerald-600">Gratis</span>
+          </label>
+        </div>
+
+        <!-- Selector de punto de encuentro local (Escondido al inicio) -->
+        <div id="contenedor-punto-local" class="hidden space-y-2 p-3 bg-neutral-50 rounded-xl border border-neutral-100">
+          <label class="block text-[9px] tracking-widest uppercase font-semibold text-neutral-400">Punto de Entrega en Tampico:</label>
+          <select id="chk-punto-encuentro" class="w-full p-2 border rounded-lg text-xs bg-white focus:outline-none focus:border-dokiRosa">
+            <option value="Altama">Altama City Center</option>
+            <option value="Plaza de Armas">Plaza de Armas (Centro)</option>
+            <option value="Laguna del Carpintero">Laguna del Carpintero</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- RESUMEN DEL PEDIDO -->
+      <div class="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm space-y-4">
+        <h3 class="font-serif italic text-xl border-b pb-2 border-neutral-50">Resumen del Pedido</h3>
+        
+        <!-- Lista resumida de productos -->
+        <div id="lista-checkout-items" class="max-h-40 overflow-y-auto space-y-2 divide-y divide-neutral-50 pr-1"></div>
+
+        <!-- Desglose de Dinero -->
+        <div class="space-y-2 text-xs pt-2">
+          <div class="flex justify-between font-light text-neutral-500">
+            <span>Subtotal:</span>
+            <span id="resumen-subtotal">$ 0.00</span>
+          </div>
+          <div class="flex justify-between font-light text-neutral-500">
+            <span>Costo de Envío:</span>
+            <span id="resumen-envio-costo">$ 100.00</span>
+          </div>
+          <div class="flex justify-between font-semibold text-dokiDark text-sm pt-2 border-t">
+            <span>Total:</span>
+            <span id="resumen-total">$ 0.00 MXN</span>
+          </div>
+        </div>
+
+        <button onclick="continuarMetodoPago()" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition shadow-sm mt-2">Continuar al Pago</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let subtotalProductos = 0;
+    let costoEnvioActual = 100;
+    let tipoEntregaActual = 'postal'; 
+
+    async function inicializarCheckout() {
+      const cart = JSON.parse(localStorage.getItem('doki_cart')) || [];
+      if(cart.length === 0) { alert('No tienes productos para procesar.'); window.location.href = 'index.html'; return; }
+
+      // Mostrar productos en la minilista derecha
+      const contenedor = document.getElementById('lista-checkout-items');
+      contenedor.innerHTML = '';
+      subtotalProductos = 0;
+
+      cart.forEach(item => {
+        subtotalProductos += item.precio * item.cantidad;
+        contenedor.innerHTML += `
+          <div class="flex justify-between items-center text-xs py-2 first:pt-0">
+            <span class="font-light text-neutral-600 truncate max-w-[70%]">${item.titulo} <strong class="text-neutral-400">x${item.cantidad}</strong></span>
+            <span class="font-medium text-neutral-800">$ ${(item.precio * item.cantidad).toFixed(2)}</span>
+          </div>
+        `;
+      });
+
+      // Intentar auto-rellenar con datos de Supabase si está logueado
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if(session) {
+        const { data: dir } = await supabaseClient.from('direcciones').select('*').eq('user_id', session.user.id).maybeSingle();
+        if(dir && dir.envio_nombre) {
+          document.getElementById('chk-nombre').value = dir.envio_nombre;
+          document.getElementById('chk-apellido').value = dir.envio_apellido;
+          document.getElementById('chk-calle').value = dir.envio_calle || '';
+          document.getElementById('chk-ciudad').value = dir.envio_ciudad || '';
+          document.getElementById('chk-estado').value = dir.envio_estado || '';
+          document.getElementById('chk-cp').value = dir.envio_cp || '';
+          document.getElementById('chk-pais').value = dir.envio_pais || 'México';
+          document.getElementById('chk-telefono').value = dir.envio_telefono;
+        }
+      } else {
+        document.getElementById('checkout-auth-alert').classList.remove('hidden');
+      }
+
+      calcularTotalesCheckout(100, 'postal');
+    }
+
+    function calcularTotalesCheckout(costo, tipo) {
+      costoEnvioActual = costo;
+      tipoEntregaActual = tipo;
+
+      const contLocal = document.getElementById('contenedor-punto-local');
+      const camposPostal = document.getElementById('campos-direccion-postal');
+
+      if(tipo === 'local') {
+        contLocal.classList.remove('hidden');
+        camposPostal.classList.add('opacity-40');
+        // Quitar obligatoriedad a campos de calle en entrega local
+        document.getElementById('chk-calle').required = false;
+        document.getElementById('chk-ciudad').required = false;
+        document.getElementById('chk-estado').required = false;
+        document.getElementById('chk-cp').required = false;
+      } else {
+        contLocal.classList.add('hidden');
+        camposPostal.classList.remove('opacity-40');
+        document.getElementById('chk-calle').required = true;
+        document.getElementById('chk-ciudad').required = true;
+        document.getElementById('chk-estado').required = true;
+        document.getElementById('chk-cp').required = true;
+      }
+
+      const totalFinal = subtotalProductos + costoEnvioActual;
+      document.getElementById('resumen-subtotal').innerText = `$ ${subtotalProductos.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+      document.getElementById('resumen-envio-costo').innerText = costo === 0 ? "Gratis" : `$ ${costo.toFixed(2)}`;
+      document.getElementById('resumen-total').innerText = `$ ${totalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+    }
+
+    function continuarMetodoPago() {
+      const form = document.getElementById('form-checkout-envio');
+      if(!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Estructurar los datos capturados para pasarlos al método de pago
+      const datosCliente = {
+        nombre: document.getElementById('chk-nombre').value,
+        apellido: document.getElementById('chk-apellido').value,
+        telefono: document.getElementById('chk-telefono').value,
+        tipo_entrega: tipoEntregaActual,
+        costo_envio: costoEnvioActual,
+        total: subtotalProductos + costoEnvioActual,
+        // Si es postal guardamos dirección, si es local guardamos punto de encuentro
+        detalles_destino: tipoEntregaActual === 'local' 
+          ? `Entrega personal en: ${document.getElementById('chk-punto-encuentro').value}`
+          : `${document.getElementById('chk-calle').value}, ${document.getElementById('chk-ciudad').value}, ${document.getElementById('chk-estado').value}, CP ${document.getElementById('chk-cp').value}, ${document.getElementById('chk-pais').value}`
+      };
+
+      // Guardar temporalmente en sessionStorage para el siguiente paso de pago
+      sessionStorage.setItem('doki_checkout_data', JSON.stringify(datosCliente));
+      
+      alert('Información guardada. ¡Vamos a seleccionar tu método de pago!');
+      // window.location.href = 'payment.html'; <-- Próxima página a crear
+    }
+
+    inicializarCheckout();
+  </script>
+</body>
+</html>
