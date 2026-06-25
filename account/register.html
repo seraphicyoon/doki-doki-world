@@ -67,7 +67,8 @@
       if (error) {
         alert("Error al registrarte: " + error.message);
       } else {
-        alert("¡Registro exitoso! Por favor revisa tu correo electrónico para confirmar tu cuenta antes de iniciar sesión.");
+        // Alerta corregida sin pedir confirmación por correo
+        alert("✨ ¡Registro exitoso! Ahora inicia sesión y disfruta de nuestros productos.");
         window.location.href = 'login.html';
       }
     }
