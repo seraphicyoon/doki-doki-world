@@ -3,246 +3,283 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doki Doki | Panel Admin</title>
+  <title>Doki Doki | Panel de Administración</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { dokiBackground: '#FBF9FC', dokiDark: '#111111', dokiRosa: '#E55B92', dokiLila: '#934B8B' },
+          fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-zinc-50 text-zinc-900 antialiased p-6">
+<body class="bg-dokiBackground text-dokiDark antialiased p-6 md:p-12">
 
-  <!-- LOGIN PANEL -->
-  <div id="login-block" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-sm border border-zinc-200">
-    <h2 class="text-xl font-bold mb-4 text-center">Doki Doki Admin</h2>
-    <input type="password" id="admin-pass" class="w-full p-3 border rounded-xl mb-4 text-center" placeholder="Introduce tu contraseña">
-    <button onclick="verificarAcceso()" class="w-full bg-zinc-900 text-white p-3 rounded-xl font-medium hover:bg-zinc-800 transition">Entrar al Panel</button>
-    <p id="login-error" class="text-red-500 text-xs mt-2 text-center hidden">Contraseña incorrecta</p>
+  <!-- TOP BAR -->
+  <div class="max-w-7xl mx-auto flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold tracking-tight">Panel de Administración ✨</h1>
+    <button onclick="cerrarSesionAdmin()" class="bg-neutral-200 hover:bg-neutral-300 text-neutral-700 px-4 py-2 rounded-xl text-xs font-medium transition">Cerrar Sesión</button>
   </div>
 
-  <!-- MAIN DASHBOARD -->
-  <div id="admin-dashboard" class="max-w-5xl mx-auto hidden space-y-8">
-    <div class="flex items-center justify-between border-b pb-4">
-      <h1 class="text-2xl font-bold tracking-tight">Panel de Administración 🌟</h1>
-      <button onclick="location.reload()" class="text-xs bg-zinc-200 px-4 py-2 rounded-lg hover:bg-zinc-300">Cerrar Sesión</button>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- FORMULARIOS -->
-      <div class="space-y-6 md:col-span-1">
-        <!-- VIDEO -->
-        <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
-          <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
-          <input type="file" id="video-file-input" accept="video/mp4" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 cursor-pointer">
-          <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">Subir Video</button>
-          <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo video...</div>
-        </div>
-
-        <!-- FORMULARIO ARTÍCULO (AÑADIR / EDITAR) -->
-        <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h2 id="form-titulo" class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Añadir Artículo</h2>
-            <button id="btn-cancelar-edicion" onclick="cancelarEdicion()" class="text-[10px] text-red-500 hover:underline hidden">Cancelar Edición</button>
-          </div>
-          
-          <input type="hidden" id="p-id">
-          <input type="text" id="p-titulo" class="w-full p-2 border rounded-xl text-xs" placeholder="Título del álbum">
-          <input type="text" id="p-artista" class="w-full p-2 border rounded-xl text-xs" placeholder="Artista / Grupo">
-          
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] text-zinc-400 uppercase font-medium mb-1">Precio (MXN):</label>
-              <input type="number" id="p-precio" class="w-full p-2 border rounded-xl text-xs" placeholder="700">
-            </div>
-            <div>
-              <label class="block text-[10px] text-zinc-400 uppercase font-medium mb-1">Cantidad Stock:</label>
-              <input type="number" id="p-stock" class="w-full p-2 border rounded-xl text-xs" placeholder="10" value="1">
-            </div>
-          </div>
-
-          <input type="text" id="p-etiqueta" class="w-full p-2 border rounded-xl text-xs" placeholder="Etiqueta (Pre-Order, Sale, etc.) o vacío">
-          <textarea id="p-descripcion" rows="3" class="w-full p-2 border rounded-xl text-xs" placeholder="Descripción del producto..."></textarea>
-          
-          <label class="block text-[11px] text-zinc-500 font-medium">Imagen de portada (Opcional si estás editando):</label>
-          <input type="file" id="p-imagen-file" accept="image/*" class="w-full text-xs text-zinc-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-zinc-100 cursor-pointer">
-          
-          <button onclick="guardarFormulario()" id="btn-producto" class="w-full bg-zinc-900 text-white p-2 rounded-xl text-xs font-medium hover:bg-zinc-800 transition">Guardar Artículo</button>
+  <!-- MAIN GRID -->
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- COLUMNA IZQUIERDA: CONTROLES Y ALTA -->
+    <div class="lg:col-span-4 space-y-6">
+      
+      <!-- CARD 1: VIDEO DE FONDO -->
+      <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Video de Fondo</h3>
+        <div class="space-y-2">
+          <input type="file" id="video-file" class="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-neutral-100 file:text-neutral-700 hover:file:bg-neutral-200">
+          <button onclick="subirVideoHero()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-medium transition pt-3">Subir Video</button>
         </div>
       </div>
 
-      <!-- INVENTARIO -->
-      <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
-        <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-4">Inventario Actual</h2>
-        <div id="admin-lista-productos" class="space-y-4 divide-y divide-zinc-100 max-h-[75vh] overflow-y-auto pr-2">
-          <p class="text-xs text-zinc-400">Cargando...</p>
+      <!-- CARD 2: GESTIONAR CATEGORÍAS (NUEVO) -->
+      <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Gestionar Categorías</h3>
+        <form onsubmit="crearCategoria(event)" class="flex space-x-2">
+          <input type="text" id="nueva-cat-nombre" required placeholder="Nueva categoría (ej. aespa)" class="flex-grow p-2 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          <button type="submit" class="bg-dokiDark text-white px-3 py-2 rounded-xl text-xs font-medium hover:bg-dokiRosa transition">＋</button>
+        </form>
+        <div id="lista-categorias-admin" class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pt-2">
+          <!-- Categorías cargadas dinámicamente -->
+        </div>
+      </div>
+
+      <!-- CARD 3: AÑADIR / EDITAR ARTÍCULO -->
+      <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm space-y-4">
+        <h3 id="form-titulo" class="text-xs font-bold uppercase tracking-wider text-neutral-400">Añadir Artículo</h3>
+        <form id="form-articulo" onsubmit="guardarArticulo(event)" class="space-y-3">
+          <input type="hidden" id="prod-id">
+          
+          <input type="text" id="prod-titulo" required placeholder="Título del álbum" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          <input type="text" id="prod-artista" required placeholder="Artista / Grupo" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[9px] font-bold text-neutral-400 uppercase mb-1">Precio (MXN):</label>
+              <input type="number" id="prod-precio" required placeholder="700" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-neutral-400 uppercase mb-1">Cantidad Stock:</label>
+              <input type="number" id="prod-stock" required placeholder="1" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+            </div>
+          </div>
+
+          <!-- SELECTOR DE CATEGORÍA (NUEVO) -->
+          <div>
+            <label class="block text-[9px] font-bold text-neutral-400 uppercase mb-1">Categoría / Grupo:</label>
+            <select id="prod-categoria" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+              <!-- Se llena dinámicamente -->
+            </select>
+          </div>
+
+          <!-- SELECTOR DE SECCIÓN (NUEVO) -->
+          <div>
+            <label class="block text-[9px] font-bold text-neutral-400 uppercase mb-1">Sección de la Tienda:</label>
+            <select id="prod-tipo-seccion" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+              <option value="Productos en Stock">Productos en Stock</option>
+              <option value="Preventas">Preventas Especiales</option>
+              <option value="Autografiados">Álbumes Autografiados</option>
+            </select>
+          </div>
+
+          <input type="text" id="prod-etiqueta" placeholder="Etiqueta (Pre-Order, Sale, etc.) o vacío" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          <textarea id="prod-descripcion" rows="3" placeholder="Descripción del producto..." class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa"></textarea>
+          
+          <div class="space-y-1">
+            <label class="block text-[10px] text-neutral-400 font-medium">Imagen de portada (Opcional si estás editando):</label>
+            <input type="file" id="prod-img-file" class="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:bg-neutral-100 hover:file:bg-neutral-200">
+          </div>
+
+          <button type="submit" id="btn-submit-prod" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition pt-3">Guardar Artículo</button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: INVENTARIO ACTUAL -->
+    <div class="lg:col-span-8">
+      <div class="bg-white p-8 rounded-3xl border border-neutral-100 shadow-sm min-h-[70vh] space-y-6">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Inventario Actual</h3>
+        
+        <div id="lista-inventario" class="space-y-4 divide-y divide-neutral-50">
+          <p class="text-xs text-neutral-400 py-6 text-center">Cargando almacén...</p>
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const CONFIG_PASSWORD = 'catcosmicadmin'; 
-    
-    let editandoId = null;
-    let urlImagenActual = '';
 
-    function verificarAcceso() {
-      if(document.getElementById('admin-pass').value === CONFIG_PASSWORD) {
-        document.getElementById('login-block').classList.add('hidden');
-        document.getElementById('admin-dashboard').classList.remove('hidden');
-        cargarDatosPanel();
-      } else {
-        document.getElementById('login-error').classList.remove('hidden');
+    let editandoImagenUrl = "";
+
+    async function inicializarPanel() {
+      await cargarCategorias();
+      await cargarInventario();
+    }
+
+    // --- LÓGICA DE CATEGORÍAS ---
+    async function cargarCategorias() {
+      const { data: cats } = await supabaseClient.from('categorias').select('*').order('nombre', { ascending: true });
+      const selectForm = document.getElementById('prod-categoria');
+      const contenedorLista = document.getElementById('lista-categorias-admin');
+
+      selectForm.innerHTML = '<option value="">Selecciona un grupo...</option>';
+      contenedorLista.innerHTML = '';
+
+      if (cats) {
+        cats.forEach(c => {
+          // Llenar selector del formulario
+          selectForm.innerHTML += `<option value="${c.nombre}">${c.nombre}</option>`;
+          // Llenar burbujas de remover
+          contenedorLista.innerHTML += `
+            <span class="inline-flex items-center bg-neutral-100 text-[10px] font-medium text-neutral-700 px-2.5 py-1 rounded-full">
+              ${c.nombre}
+              <button onclick="eliminarCategoria(${c.id})" class="ml-1.5 text-neutral-400 hover:text-red-500 font-bold">✕</button>
+            </span>
+          `;
+        });
       }
     }
 
-    async function cargarDatosPanel() {
-      const { data: productos, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
-      const lista = document.getElementById('admin-lista-productos');
-      lista.innerHTML = '';
-      if (error) { lista.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Error: ${error.code}</p>`; return; }
-      if(!productos || productos.length === 0) { lista.innerHTML = '<p class="text-xs text-zinc-400 py-4 text-center">Sin artículos.</p>'; return; }
+    async function crearCategoria(e) {
+      e.preventDefault();
+      const input = document.getElementById('nueva-cat-nombre');
+      const nombre = input.value.trim();
 
-      productos.forEach(prod => {
-        const stockNum = prod.stock !== undefined && prod.stock !== null ? prod.stock : 1;
-        const estaAgotado = stockNum <= 0;
-        const badgeStock = estaAgotado 
-          ? `<span class="bg-red-50 text-red-600 text-[9px] px-2 py-0.5 rounded font-medium border border-red-100">Agotado</span>` 
-          : `<span class="bg-zinc-100 text-zinc-600 text-[9px] px-2 py-0.5 rounded font-medium">Stock: ${stockNum}</span>`;
+      const { error } = await supabaseClient.from('categorias').insert([{ nombre }]);
+      if (error) alert("Error o categoría ya existente: " + error.message);
+      
+      input.value = '';
+      await cargarCategorias();
+    }
 
-        lista.innerHTML += `
+    async function eliminarCategoria(id) {
+      if(!confirm("¿Segura que deseas eliminar esta categoría?")) return;
+      await supabaseClient.from('categorias').delete().eq('id', id);
+      await cargarCategorias();
+    }
+
+    // --- LÓGICA DE PRODUCTOS ---
+    async function cargarInventario() {
+      const contenedor = document.getElementById('lista-inventario');
+      const { data: prods, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
+
+      if(error || !prods || prods.length === 0) {
+        contenedor.innerHTML = '<p class="text-xs text-neutral-400 py-6 text-center">No hay productos en catálogo.</p>';
+        return;
+      }
+
+      contenedor.innerHTML = '';
+      prods.forEach(p => {
+        contenedor.innerHTML += `
           <div class="flex items-center justify-between pt-4 first:pt-0">
-            <div class="flex items-center space-x-3">
-              <img src="${prod.imagen}" class="w-12 h-12 object-cover rounded-lg bg-zinc-100">
+            <div class="flex items-center space-x-4">
+              <img src="${p.imagen}" class="w-12 h-12 object-cover rounded-xl bg-neutral-100">
               <div>
-                <div class="flex items-center space-x-2">
-                  <h4 class="text-xs font-semibold text-zinc-800">${prod.titulo}</h4>
-                  ${badgeStock}
-                </div>
-                <p class="text-[10px] text-zinc-400">${prod.artista || 'K-Pop'} · <span class="font-medium text-zinc-600">$${prod.precio} MXN</span></p>
+                <h4 class="text-xs font-semibold text-neutral-800">${p.titulo}</h4>
+                <p class="text-[10px] text-neutral-400 mt-0.5">${p.artista || 'K-Pop'} · <span class="text-dokiRosa font-medium">${p.categoria || 'Sin grupo'}</span> · <span class="bg-neutral-100 px-1.5 py-0.5 rounded text-[9px] font-semibold">${p.tipo_seccion || 'Stock'}</span></p>
+                <p class="text-[10px] font-bold text-neutral-600 mt-0.5">$ ${p.precio} MXN <span class="font-normal text-neutral-400 ml-2">Stock: ${p.stock || 0}</span></p>
               </div>
             </div>
-            <div class="flex space-x-2">
-              <button onclick="prepararEdicion(${JSON.stringify(prod).replace(/"/g, '&quot;')})" class="text-[10px] bg-zinc-100 text-zinc-700 px-3 py-1.5 rounded-lg hover:bg-zinc-200 transition font-medium">Editar</button>
-              <button onclick="eliminarProducto(${prod.id})" class="text-[10px] bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 font-medium">Eliminar</button>
+            <div class="flex space-x-1.5">
+              <button onclick="prepararEdicion(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-3 py-1.5 rounded-lg text-[10px] font-medium transition">Editar</button>
+              <button onclick="eliminarProducto(${p.id})" class="bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1.5 rounded-lg text-[10px] font-medium transition">Eliminar</button>
             </div>
           </div>
         `;
       });
     }
 
-    function prepararEdicion(prod) {
-      editandoId = prod.id;
-      urlImagenActual = prod.imagen;
+    async function guardarArticulo(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-prod');
+      btn.disabled = true; btn.innerText = "PROCESANDO...";
+
+      const id = document.getElementById('prod-id').value;
+      const fileInput = document.getElementById('prod-img-file');
       
-      document.getElementById('form-titulo').innerText = 'Editar Artículo';
-      document.getElementById('btn-cancelar-edicion').classList.remove('hidden');
-      document.getElementById('btn-producto').innerText = 'Actualizar Artículo';
-      document.getElementById('btn-producto').classList.replace('bg-zinc-900', 'bg-amber-600');
-      document.getElementById('btn-producto').classList.replace('hover:bg-zinc-800', 'hover:bg-amber-500');
+      let finalImageUrl = editandoImagenUrl;
 
-      document.getElementById('p-titulo').value = prod.titulo;
-      document.getElementById('p-artista').value = prod.artista || '';
-      document.getElementById('p-precio').value = prod.precio;
-      document.getElementById('p-stock').value = prod.stock !== undefined ? prod.stock : 1;
-      document.getElementById('p-etiqueta').value = prod.etiqueta || '';
-      document.getElementById('p-descripcion').value = prod.descripcion || '';
-      document.getElementById('p-imagen-file').value = ''; 
-    }
-
-    function cancelarEdicion() {
-      editandoId = null;
-      urlImagenActual = '';
-      
-      document.getElementById('form-titulo').innerText = 'Añadir Artículo';
-      document.getElementById('btn-cancelar-edicion').classList.add('hidden');
-      document.getElementById('btn-producto').innerText = 'Guardar Artículo';
-      document.getElementById('btn-producto').classList.replace('bg-amber-600', 'bg-zinc-900');
-      document.getElementById('btn-producto').classList.replace('hover:bg-amber-500', 'hover:bg-zinc-800');
-
-      document.getElementById('p-titulo').value = '';
-      document.getElementById('p-artista').value = '';
-      document.getElementById('p-precio').value = '';
-      document.getElementById('p-stock').value = '1';
-      document.getElementById('p-etiqueta').value = '';
-      document.getElementById('p-descripcion').value = '';
-      document.getElementById('p-imagen-file').value = '';
-    }
-
-    async function guardarFormulario() {
-      const titulo = document.getElementById('p-titulo').value;
-      const artista = document.getElementById('p-artista').value;
-      const precio = parseFloat(document.getElementById('p-precio').value) || 0;
-      const stock = parseInt(document.getElementById('p-stock').value) || 0;
-      const etiqueta = document.getElementById('p-etiqueta').value || null;
-      const descripcion = document.getElementById('p-descripcion').value || '';
-      const imageFile = document.getElementById('p-imagen-file').files[0];
-      const btn = document.getElementById('btn-producto');
-
-      if(!titulo || !precio) { alert('Introduce título y precio válido.'); return; }
-      if(!editandoId && !imageFile) { alert('Por favor selecciona una imagen para el nuevo producto.'); return; }
-
-      btn.disabled = true; 
-      btn.innerText = editandoId ? 'Actualizando...' : 'Guardando...';
-
-      let finalImageUrl = urlImagenActual;
-
-      // Si subieron una foto nueva, la guardamos en el Storage
-      if (imageFile) {
-        const imgName = `img_${Date.now()}_${imageFile.name.replace(/\s+/g, '_')}`;
-        const { error: uploadError } = await supabaseClient.storage.from('imagenes').upload(imgName, imageFile);
-        if(uploadError) { alert('Error subiendo imagen: ' + uploadError.message); btn.disabled = false; btn.innerText = editandoId ? 'Actualizar Artículo' : 'Guardar Artículo'; return; }
-        finalImageUrl = `${SUPABASE_URL}/storage/v1/object/public/imagenes/${imgName}`;
+      // Subir archivo a storage si seleccionaron uno
+      if(fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        
+        const { data, error: uploadError } = await supabaseClient.storage.from('imagenes-productos').upload(fileName, file);
+        if(!uploadError) {
+          const { data: urlData } = supabaseClient.storage.from('imagenes-productos').getPublicUrl(fileName);
+          finalImageUrl = urlData.publicUrl;
+        }
       }
 
-      const datosProducto = { titulo, artista, precio, stock, imagen: finalImageUrl, etiqueta, descripcion };
+      const payload = {
+        titulo: document.getElementById('prod-titulo').value,
+        artista: document.getElementById('prod-artista').value,
+        precio: parseFloat(document.getElementById('prod-precio').value),
+        stock: parseInt(document.getElementById('prod-stock').value),
+        categoria: document.getElementById('prod-categoria').value,
+        tipo_seccion: document.getElementById('prod-tipo-seccion').value,
+        etiqueta: document.getElementById('prod-etiqueta').value,
+        descripcion: document.getElementById('prod-descripcion').value,
+        imagen: finalImageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600'
+      };
 
-      let resultado;
-      if (editandoId) {
-        // Modo EDITAR
-        resultado = await supabaseClient.from('productos').update(datosProducto).eq('id', editandoId);
+      if(id) {
+        await supabaseClient.from('productos').update(payload).eq('id', id);
       } else {
-        // Modo NUEVO
-        resultado = await supabaseClient.from('productos').insert([datosProducto]);
+        await supabaseClient.from('productos').insert([payload]);
       }
 
-      btn.disabled = false;
-
-      if (resultado.error) { 
-        alert('Error en base de datos: ' + resultado.error.message); 
-      } else {
-        alert(editandoId ? '¡Artículo actualizado correctamente!' : '¡Álbum guardado con éxito!');
-        cancelarEdicion();
-        cargarDatosPanel();
-      }
+      document.getElementById('form-articulo').reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('form-titulo').innerText = "Añadir Artículo";
+      editandoImagenUrl = "";
+      
+      btn.disabled = false; btn.innerText = "Guardar Artículo";
+      await cargarInventario();
     }
 
-    async function subirYActualizarVideo() {
-      const fileInput = document.getElementById('video-file-input');
-      const statusText = document.getElementById('video-status');
-      const btn = document.getElementById('btn-video');
-      if (!fileInput.files || fileInput.files.length === 0) { alert('Selecciona un archivo .mp4'); return; }
+    function prepararEdicion(p) {
+      document.getElementById('form-titulo').innerText = "Editar Artículo";
+      document.getElementById('prod-id').value = p.id;
+      document.getElementById('prod-titulo').value = p.titulo;
+      document.getElementById('prod-artista').value = p.artista;
+      document.getElementById('prod-precio').value = p.precio;
+      document.getElementById('prod-stock').value = p.stock || 0;
+      document.getElementById('prod-categoria').value = p.categoria || '';
+      document.getElementById('prod-tipo-seccion').value = p.tipo_seccion || 'Productos en Stock';
+      document.getElementById('prod-etiqueta').value = p.etiqueta || '';
+      document.getElementById('prod-descripcion').value = p.descripcion || '';
+      editandoImagenUrl = p.imagen;
       
-      const file = fileInput.files[0];
-      const fileName = `hero_video_${Date.now()}.mp4`;
-      statusText.classList.remove('hidden'); btn.disabled = true;
-
-      const { error: uploadError } = await supabaseClient.storage.from('videos').upload(fileName, file, { cacheControl: '3600', upsert: true });
-      if (uploadError) { alert('Error: ' + uploadError.message); statusText.classList.add('hidden'); btn.disabled = false; return; }
-
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/videos/${fileName}`;
-      await supabaseClient.from('configuracion').update({ valor: publicUrl }).eq('clave', 'video_hero');
-      
-      statusText.classList.add('hidden'); btn.disabled = false;
-      alert('¡Video cambiado!'); fileInput.value = '';
+      document.getElementById('form-titulo').scrollIntoView({ behavior: 'smooth' });
     }
 
     async function eliminarProducto(id) {
-      if(confirm('¿Eliminar artículo definitivamente?')) {
-        await supabaseClient.from('productos').delete().eq('id', id);
-        cargarDatosPanel();
-      }
+      if(!confirm("¿Deseas dar de baja este producto del catálogo?")) return;
+      await supabaseClient.from('productos').delete().eq('id', id);
+      await cargarInventario();
     }
+
+    function cerrarSesionAdmin() {
+      window.location.href = 'index.html';
+    }
+
+    inicializarPanel();
   </script>
 </body>
 </html>
