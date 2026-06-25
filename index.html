@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doki Doki World | K-Pop Album Shop</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Fuentes elegantes y minimalistas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <!-- Configuración personalizada de Tailwind con la paleta de tu logo -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dokiBackground: '#FBF9FC', // Fondo lila/grisáceo ultra claro y lujoso
+            dokiDark: '#111111',       // El color oscuro de la cabeza del gatito para textos
+            dokiRosa: '#E55B92',       // El rosa vibrante de los pétalos para acentos
+            dokiLila: '#934B8B',       // El lila intermedio de los pétalos
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dokiBackground text-dokiDark antialiased">
+
+  <!-- ================= HEADER / NAVBAR ELEGANTE ================= -->
+  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-100">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      
+      <!-- Enlaces Izquierda -->
+      <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
+        <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Inicio</a>
+        <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Preventas</a>
+        <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Categorías</a>
+      </div>
+
+      <!-- LOGO CENTRAL -->
+      <div class="text-center">
+        <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
+        <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
+      </div>
+
+      <!-- Iconos Derecha -->
+      <div class="flex items-center space-x-6 text-sm font-light">
+        <a href="#" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
+        <div class="relative cursor-pointer hover:text-dokiRosa transition-colors duration-300">
+          <!-- Icono de Bolsa de compras minimalista -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ================= HERO SECTION (VIDEO BACKGROUND) ================= -->
+  <section class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
+    
+    <!-- Video de Fondo en Bucle (Coloca tu link de video en src más adelante) -->
+    <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Capa oscura traslúcida usando el tono de la cabeza del gato (#111111) -->
+    <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/30 backdrop-blur-[1px] z-10"></div>
+
+    <!-- Contenido encima del video -->
+    <div class="relative z-20 text-center text-white px-4 max-w-2xl">
+      <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
+      <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">
+        Tu tienda mexicana de K-Pop · De fans para fans
+      </p>
+      <a href="#" class="inline-block px-8 py-3 rounded-full border border-white text-white uppercase text-[10px] tracking-widest font-medium bg-transparent hover:bg-white hover:text-dokiDark transition-all duration-300">
+        Ver Preventas Especiales
+      </a>
+    </div>
+
+  </section>
+
+</body>
+</html>
