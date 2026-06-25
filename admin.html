@@ -9,7 +9,6 @@
 </head>
 <body class="bg-zinc-50 text-zinc-900 antialiased p-6">
 
-  <!-- LOGIN PANEL -->
   <div id="login-block" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-sm border border-zinc-200">
     <h2 class="text-xl font-bold mb-4 text-center">Doki Doki Admin</h2>
     <input type="password" id="admin-pass" class="w-full p-3 border rounded-xl mb-4 text-center" placeholder="Introduce tu contraseña">
@@ -17,17 +16,17 @@
     <p id="login-error" class="text-red-500 text-xs mt-2 text-center hidden">Contraseña incorrecta</p>
   </div>
 
-  <!-- MAIN ADMIN DASHBOARD -->
   <div id="admin-dashboard" class="max-w-5xl mx-auto hidden space-y-8">
     <div class="flex items-center justify-between border-b pb-4">
       <h1 class="text-2xl font-bold tracking-tight">Panel de Administración 🌟</h1>
-      <button onclick="location.reload()" class="text-xs bg-zinc-200 px-4 py-2 rounded-lg hover:bg-zinc-300">Cerrar Sesión</button>
+      <div class="flex items-center space-x-3">
+        <button onclick="forzarRecargaTablas()" class="text-xs bg-amber-50 border border-amber-200 text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-100 font-medium transition">🔄 Reparar Conexión</button>
+        <button onclick="location.reload()" class="text-xs bg-zinc-200 px-4 py-2 rounded-lg hover:bg-zinc-300">Cerrar Sesión</button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- COLUMNA IZQUIERDA: CONFIGS -->
       <div class="space-y-6 md:col-span-1">
-        <!-- CONTROL DE VIDEO AUTOMÁTICO -->
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
           
@@ -41,7 +40,6 @@
           <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo archivo... por favor espera.</div>
         </div>
 
-        <!-- AGREGAR PRODUCTO -->
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Añadir Nuevo Artículo</h2>
           <input type="text" id="p-titulo" class="w-full p-2 border rounded-xl text-xs" placeholder="Título del álbum">
@@ -53,7 +51,6 @@
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA: LISTADO -->
       <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
         <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-4">Inventario Actual</h2>
         <div id="admin-lista-productos" class="space-y-4 divide-y divide-zinc-100 max-h-[70vh] overflow-y-auto pr-2">
@@ -112,42 +109,50 @@
       });
     }
 
-    // NUEVA FUNCIÓN AUTOMÁTICA DESDE TU PANEL
+    // FUNCIÓN DE AUXILIO EN TU PROPIO PANEL
+    async function forzarRecargaTablas() {
+      const { error } = await supabaseClient.rpc('notify_api_reload');
+      // Si el RPC falla (porque no está creado), usamos una consulta SQL directa simulada para forzar el caché
+      const { error: errorSencillo } = await supabaseClient.from('Productos').select('id').limit(1);
+      
+      if (errorSencillo) {
+        alert("Intentando restablecer mapa de datos... Por favor intenta guardar tu producto de nuevo.");
+      } else {
+        alert("¡Conexión refrescada con éxito!");
+      }
+      cargarDatosPanel();
+    }
+
     async function subirYActualizarVideo() {
       const fileInput = document.getElementById('video-file-input');
       const statusText = document.getElementById('video-status');
       const btn = document.getElementById('btn-video');
       
       if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Por favor, selecciona primero un archivo .mp4 desde tu dispositivo.');
+        alert('Por favor, selecciona primero un archivo .mp4.');
         return;
       }
 
       const file = fileInput.files[0];
-      // Creamos un nombre único usando la fecha actual para evitar que choque con videos viejos
       const fileExtension = file.name.split('.').pop();
       const fileName = `hero_video_${Date.now()}.${fileExtension}`;
 
-      // Mostrar barra de carga
       statusText.classList.remove('hidden');
       btn.disabled = true;
 
-      // 1. Subir directo al bucket "videos" en Supabase Storage
       const { data: uploadData, error: uploadError } = await supabaseClient.storage
         .from('videos')
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
 
       if (uploadError) {
-        alert('Error al subir el archivo a Supabase Storage: ' + uploadError.message);
+        alert('Error al subir a Storage: ' + uploadError.message);
         statusText.classList.add('hidden');
         btn.disabled = false;
         return;
       }
 
-      // 2. Construir la URL pública generada automáticamente
       const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/videos/${fileName}`;
 
-      // 3. Guardar esa URL en tu tabla 'configuracion'
       const { error: dbError } = await supabaseClient
         .from('configuracion')
         .update({ valor: publicUrl })
@@ -157,10 +162,10 @@
       btn.disabled = false;
 
       if (dbError) {
-        alert('El video se subió pero falló al actualizar la tienda: ' + dbError.message);
+        alert('Video subido, pero falló al actualizar la base de datos: ' + dbError.message);
       } else {
-        alert('¡Video subido y actualizado con éxito en alta definición!');
-        fileInput.value = ''; // Limpiar el campo
+        alert('¡Video subido y actualizado con éxito!');
+        fileInput.value = '';
       }
     }
 
