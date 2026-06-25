@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doki Doki World | Mi Perfil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { dokiBackground: '#FBF9FC', dokiDark: '#111111', dokiRosa: '#E55B92', dokiLila: '#934B8B' },
+          fontFamily: { sans: ['Montserrat', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dokiBackground text-dokiDark antialiased min-h-screen flex flex-col">
+
+  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md border-b border-neutral-100">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="../index.html" class="text-xs tracking-widest uppercase font-light hover:text-dokiRosa transition">← Volver a la Tienda</a>
+      <div class="text-center">
+        <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
+        <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
+      </div>
+      <div class="w-24"></div> 
+    </div>
+  </nav>
+
+  <main class="flex-grow flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-sm border border-neutral-100 text-center space-y-6">
+      
+      <div class="flex flex-col items-center space-y-3">
+        <div class="w-20 h-20 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-2xl shadow-inner select-none">
+          ✨
+        </div>
+        <div>
+          <h2 class="font-serif italic text-2xl text-dokiDark">¡Hola de nuevo!</h2>
+          <p id="user-email" class="text-xs font-light text-neutral-400 mt-1">cargando_usuario@mail.com</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-4 border-t border-neutral-50">
+        <a href="#" class="block w-full bg-neutral-50 hover:bg-neutral-100 text-neutral-700 py-3 px-4 rounded-xl text-xs font-medium tracking-wider uppercase transition text-center">
+          🛍️ Mis Pedidos / Compras
+        </a>
+        <a href="#" class="block w-full bg-neutral-50 hover:bg-neutral-100 text-neutral-700 py-3 px-4 rounded-xl text-xs font-medium tracking-wider uppercase transition text-center">
+          💖 Lista de Deseos
+        </a>
+        <button onclick="cerrarSesion()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-3 px-4 rounded-xl text-xs font-medium tracking-wider uppercase transition mt-4">
+          Cerrar Sesión
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function verificarPerfil() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      // Si no hay sesión, lo saca al login
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Pone el correo real del usuario logueado
+      document.getElementById('user-email').innerText = session.user.email;
+    }
+
+    async function cerrarSesion() {
+      await supabaseClient.auth.signOut();
+      window.location.href = '../index.html';
+    }
+
+    verificarPerfil();
+  </script>
+</body>
+</html>
