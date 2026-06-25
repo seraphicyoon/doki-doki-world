@@ -28,9 +28,7 @@
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
           <label class="block text-xs text-zinc-500 font-medium">Subir nuevo video (.mp4):</label>
           <input type="file" id="video-file-input" accept="video/mp4" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 cursor-pointer">
-          <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">
-            Subir y Cambiar Video
-          </button>
+          <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">Subir y Cambiar Video</button>
           <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo archivo... por favor espera.</div>
         </div>
 
@@ -60,40 +58,26 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const CONFIG_PASSWORD = 'catcosmicadmin'; 
-    let NOMBRE_TABLA_REAL = 'Productos'; // Por defecto intentamos con Mayúscula
 
     function verificarAcceso() {
       const pass = document.getElementById('admin-pass').value;
       if(pass === CONFIG_PASSWORD) {
         document.getElementById('login-block').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
-        descubrirYCargarDatos();
+        cargarDatosPanel();
       } else {
         document.getElementById('login-error').classList.remove('hidden');
       }
     }
 
-    // Función inteligente que detecta si tu tabla se llama "Productos" o "productos"
-    async function descubrirYCargarDatos() {
-      // Intento 1: Con P mayúscula
-      let { data, error } = await supabaseClient.from('Productos').select('*').limit(1);
-      
-      if (error && error.code === '42P01') {
-        // Si sale el error de que no existe, cambiamos automáticamente a minúsculas
-        NOMBRE_TABLA_REAL = 'productos';
-      }
-      
-      cargarDatosPanel();
-    }
-
     async function cargarDatosPanel() {
-      const { data: productos, error } = await supabaseClient.from(NOMBRE_TABLA_REAL).select('*').order('id', { ascending: false });
+      // APUNTANDO DIRECTAMENTE A "productos" EN MINÚSCULA
+      const { data: productos, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
       const lista = document.getElementById('admin-lista-productos');
       lista.innerHTML = '';
 
       if (error) {
-        console.error("Error definitivo:", error);
-        lista.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla "${NOMBRE_TABLA_REAL}". Código: ${error.code}</p>`;
+        lista.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla productos. Código: ${error.code}</p>`;
         return;
       }
 
@@ -173,7 +157,8 @@
 
       if(!titulo || !precio) { alert('Mínimo pon el título y el precio'); return; }
 
-      const { error } = await supabaseClient.from(NOMBRE_TABLA_REAL).insert([{ titulo, artista, precio, imagen, etiqueta }]);
+      // CAMBIADO A MINÚSCULA "productos"
+      const { error } = await supabaseClient.from('productos').insert([{ titulo, artista, precio, imagen, etiqueta }]);
       
       if (error) {
         alert('Error al guardar producto: ' + error.message);
@@ -190,7 +175,8 @@
 
     async function eliminarProducto(id) {
       if(confirm('¿Segura que quieres eliminar este artículo del catálogo?')) {
-        const { error } = await supabaseClient.from(NOMBRE_TABLA_REAL).delete().eq('id', id);
+        // CAMBIADO A MINÚSCULA "productos"
+        const { error } = await supabaseClient.from('productos').delete().eq('id', id);
         if (error) { alert('Error al eliminar: ' + error.message); } else { cargarDatosPanel(); }
       }
     }

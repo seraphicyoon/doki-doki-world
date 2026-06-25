@@ -10,7 +10,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -54,11 +54,8 @@
   </nav>
 
   <section id="hero-container" class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black">
-    <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none flex items-center justify-center">
-      </div>
-    
+    <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none flex items-center justify-center"></div>
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/40 backdrop-blur-[1px] z-10 pointer-events-none"></div>
-    
     <div class="relative z-20 text-center text-white px-4 max-w-2xl pointer-events-auto">
       <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
       <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">Tu tienda mexicana de K-Pop · De fans para fans</p>
@@ -83,23 +80,14 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Cargar Video Nativo MP4 desde tu base de datos configuracion
     async function cargarVideoHero() {
       const { data: config } = await supabaseClient.from('configuracion').select('valor').eq('clave', 'video_hero').single();
       const wrapper = document.getElementById('video-wrapper');
-      
-      // Video por defecto (Abstracto) por si acaso queda vacío
       let videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4'; 
-      
-      if (config && config.valor) {
-        videoUrl = config.valor;
-      }
+      if (config && config.valor) { videoUrl = config.valor; }
 
-      // Renderiza video nativo HTML5: sin controles, inmune a toques, autoplay forzado y loop fluido
       wrapper.innerHTML = `
-        <video autoplay loop muted playsinline 
-          class="w-full h-full object-cover pointer-events-none"
-          style="min-height: 70vh; width: 100vw; object-fit: cover;">
+        <video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;">
           <source src="${videoUrl}" type="video/mp4" />
         </video>
       `;
@@ -107,7 +95,8 @@
 
     async function cargarProductos() {
       const grid = document.getElementById('grid-productos');
-      const { data: productos, error } = await supabaseClient.from('Productos').select('*').order('id', { ascending: true });
+      // CAMBIADO A MINÚSCULA "productos"
+      const { data: productos, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: true });
 
       if (error) {
         console.error(error);
@@ -117,7 +106,7 @@
 
       grid.innerHTML = ''; 
       if (!productos || productos.length === 0) {
-        grid.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">No hay productos registrados en tu base de datos.</p>`;
+        grid.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">No hay productos registrados.</p>`;
         return;
       }
 
