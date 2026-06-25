@@ -20,6 +20,7 @@
 </head>
 <body class="bg-dokiBackground text-dokiDark antialiased min-h-screen flex flex-col">
 
+  <!-- NAVBAR -->
   <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <a href="index.html" class="text-xs tracking-widest uppercase font-light hover:text-dokiRosa transition">← Volver al inicio</a>
@@ -27,36 +28,45 @@
         <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
         <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
       </div>
-      <div class="w-24"></div> </div>
+      <div class="w-24"></div> 
+    </div>
   </nav>
 
+  <!-- SECCIÓN DE DETALLES -->
   <main class="flex-grow max-w-5xl mx-auto px-6 py-12 w-full">
     <div id="loading-view" class="text-center py-20 uppercase text-xs tracking-widest text-neutral-400">Cargando detalles del álbum...</div>
     
     <div id="producto-view" class="grid grid-cols-1 md:grid-cols-2 gap-12 hidden">
+      <!-- Lado Izquierdo: Imagen y Etiqueta -->
       <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-3xl shadow-sm">
         <img id="det-imagen" src="" class="w-full h-full object-cover">
         <span id="det-etiqueta" class="absolute top-4 left-4 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm hidden"></span>
       </div>
       
+      <!-- Lado Derecho: Info -->
       <div class="flex flex-col justify-center space-y-6">
         <div>
           <p id="det-artista" class="text-xs tracking-widest uppercase font-light text-neutral-400 mb-1"></p>
           <h1 id="det-titulo" class="font-serif italic text-3xl md:text-4xl tracking-wide text-dokiDark"></h1>
         </div>
         
-        <p id="det-precio" class="text-xl font-medium tracking-wide text-neutral-800 border-b pb-4 border-neutral-100"></p>
+        <div class="border-b pb-4 border-neutral-100">
+          <p id="det-precio" class="text-xl font-medium tracking-wide text-neutral-800"></p>
+          <!-- Contenedor del estado de Stock -->
+          <div id="det-stock-status" class="text-xs font-medium tracking-wider uppercase mt-2"></div>
+        </div>
         
         <div class="space-y-2">
           <h4 class="text-[10px] tracking-widest uppercase font-semibold text-neutral-400">Información del Artículo</h4>
           <p id="det-descripcion" class="text-sm font-light leading-relaxed text-neutral-600 whitespace-pre-line"></p>
         </div>
 
-        <button class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition-all duration-300 shadow-sm mt-4">Preguntar por Disponibilidad</button>
+        <button id="btn-accion" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition-all duration-300 shadow-sm mt-4">Preguntar por Disponibilidad</button>
       </div>
     </div>
   </main>
 
+  <!-- CONFIGURACIÓN Y LÓGICA DE SUPABASE -->
   <script>
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
@@ -75,13 +85,31 @@
         return;
       }
 
-      // Rellenar datos
+      // Rellenar datos básicos
       document.getElementById('det-imagen').src = prod.imagen;
       document.getElementById('det-artista').innerText = prod.artista || 'K-POP';
       document.getElementById('det-titulo').innerText = prod.titulo;
       document.getElementById('det-precio').innerText = `$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
       document.getElementById('det-descripcion').innerText = prod.descripcion || 'No hay descripción disponible para este artículo por el momento.';
 
+      // Lógica de validación dinámica de Stock
+      const stockStatus = document.getElementById('det-stock-status');
+      const btnAccion = document.getElementById('btn-accion');
+      const cantidadStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 1;
+
+      if (cantidadStock <= 0) {
+        stockStatus.innerText = "❌ Fuera de Stock / Agotado";
+        stockStatus.className = "text-xs font-medium tracking-wider uppercase mt-2 text-red-500";
+        // Estilo visual de botón deshabilitado si no hay stock
+        btnAccion.innerText = "Agotado Temporalmente";
+        btnAccion.disabled = true;
+        btnAccion.className = "w-full bg-neutral-200 text-neutral-400 py-3 rounded-full text-xs font-medium uppercase tracking-widest cursor-not-allowed mt-4 shadow-sm";
+      } else {
+        stockStatus.innerText = `✨ ¡Disponibles: ${cantidadStock} piezas!`;
+        stockStatus.className = "text-xs font-medium tracking-wider uppercase mt-2 text-emerald-600";
+      }
+
+      // Manejo de Etiquetas estéticas (Sale, Pre-Order, etc.)
       if(prod.etiqueta) {
         const tag = document.getElementById('det-etiqueta');
         tag.innerText = prod.etiqueta;
@@ -93,6 +121,7 @@
         }
       }
 
+      // Ocultar vista de carga y mostrar el producto armado
       document.getElementById('loading-view').classList.add('hidden');
       document.getElementById('producto-view').classList.remove('hidden');
     }
