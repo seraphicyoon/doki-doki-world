@@ -36,7 +36,7 @@
     </div>
   </nav>
 
-  <!-- ================= CARRITO LATERAL FLOTANTE ================= -->
+  <!-- CARRITO LATERAL FLOTANTE -->
   <div id="sidebar-carrito" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-neutral-100">
     <div class="p-6 border-b border-neutral-100 flex items-center justify-between">
       <div>
@@ -84,7 +84,16 @@
           <p id="det-descripcion" class="text-sm font-light leading-relaxed text-neutral-600 whitespace-pre-line"></p>
         </div>
 
-        <!-- El botón cambiará de función dependiendo de la existencia de stock -->
+        <!-- CONTENEDOR SELECTOR DE CANTIDAD (Estilo Minimalista) -->
+        <div id="contenedor-cantidad" class="space-y-2 pt-2">
+          <label class="block text-[10px] tracking-widest uppercase font-semibold text-neutral-400">Cantidad</label>
+          <div class="flex items-center border border-neutral-200 rounded-xl w-32 overflow-hidden bg-neutral-50/50">
+            <button onclick="cambiarCantidadLocal(-1)" class="w-10 h-10 text-xs hover:bg-neutral-100 transition select-none font-medium">─</button>
+            <input type="number" id="input-cantidad" value="1" min="1" class="w-12 h-10 text-center text-xs bg-transparent focus:outline-none font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+            <button onclick="cambiarCantidadLocal(1)" class="w-10 h-10 text-xs hover:bg-neutral-100 transition select-none font-medium">＋</button>
+          </div>
+        </div>
+
         <button id="btn-accion" onclick="agregarAlCarritoAccion()" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition-all duration-300 shadow-sm mt-4">Añadir al Carrito</button>
       </div>
     </div>
@@ -95,7 +104,8 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let productoActual = null; // Guardar datos locales del álbum cargado
+    let productoActual = null;
+    let maxStockDisponible = 1;
 
     async function cargarDetalleProducto() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -106,6 +116,7 @@
       if(error || !prod) { document.getElementById('loading-view').innerText = 'El producto no existe.'; return; }
 
       productoActual = prod;
+      maxStockDisponible = prod.stock !== undefined && prod.stock !== null ? prod.stock : 1;
 
       document.getElementById('det-imagen').src = prod.imagen;
       document.getElementById('det-artista').innerText = prod.artista || 'K-POP';
@@ -115,16 +126,17 @@
 
       const stockStatus = document.getElementById('det-stock-status');
       const btnAccion = document.getElementById('btn-accion');
-      const cantidadStock = prod.stock !== undefined && prod.stock !== null ? prod.stock : 1;
+      const contenedorCantidad = document.getElementById('contenedor-cantidad');
 
-      if (cantidadStock <= 0) {
+      if (maxStockDisponible <= 0) {
         stockStatus.innerText = "❌ Fuera de Stock / Agotado";
         stockStatus.className = "text-xs font-medium tracking-wider uppercase mt-2 text-red-500";
         btnAccion.innerText = "Agotado Temporalmente";
         btnAccion.disabled = true;
         btnAccion.className = "w-full bg-neutral-200 text-neutral-400 py-3 rounded-full text-xs font-medium uppercase tracking-widest cursor-not-allowed mt-4 shadow-sm";
+        contenedorCantidad.classList.add('hidden'); // Ocultar controles si no hay stock
       } else {
-        stockStatus.innerText = `✨ ¡Disponibles: ${cantidadStock} piezas!`;
+        stockStatus.innerText = `✨ ¡Disponibles: ${maxStockDisponible} piezas!`;
         stockStatus.className = "text-xs font-medium tracking-wider uppercase mt-2 text-emerald-600";
       }
 
@@ -139,27 +151,50 @@
       document.getElementById('producto-view').classList.remove('hidden');
     }
 
-    // MANEJO CARRITO INTERNO DE LA HOJA
+    // CONTROL DE CANTIDAD EN LA VISTA
+    function cambiarCantidadLocal(valor) {
+      const input = document.getElementById('input-cantidad');
+      let actual = parseInt(input.value) || 1;
+      actual += valor;
+      
+      if (actual < 1) actual = 1;
+      if (actual > maxStockDisponible) {
+        actual = maxStockDisponible;
+        alert(`Lo sentimos, solo contamos con ${maxStockDisponible} piezas disponibles en inventario.`);
+      }
+      
+      input.value = actual;
+    }
+
+    // MANEJO CARRITO CON CANTIDAD VARIADA
     function agregarAlCarritoAccion() {
       if(!productoActual) return;
+      const input = document.getElementById('input-cantidad');
+      const cantidadASeleccionar = parseInt(input.value) || 1;
+
       let cart = JSON.parse(localStorage.getItem('doki_cart')) || [];
-      
-      // Validar si el artículo ya está dentro del carrito
       const itemExistente = cart.find(item => item.id === productoActual.id);
+
       if(itemExistente) {
-        itemExistente.cantidad += 1;
+        const nuevaCantidadTotal = itemExistente.cantidad + cantidadASeleccionar;
+        if (nuevaCantidadTotal > maxStockDisponible) {
+          alert(`No puedes añadir más. Ya tienes ${itemExistente.cantidad} piezas en tu carrito y el stock máximo es de ${maxStockDisponible}.`);
+          return;
+        }
+        itemExistente.cantidad = nuevaCantidadTotal;
       } else {
         cart.push({
           id: productoActual.id,
           titulo: productoActual.titulo,
           precio: productoActual.precio,
           imagen: productoActual.imagen,
-          cantidad: 1
+          cantidad: cantidadASeleccionar
         });
       }
 
       localStorage.setItem('doki_cart', JSON.stringify(cart));
-      toggleCarrito(); // Abrir el carrito flotante de forma automática para dar feedback
+      input.value = 1; // Resetear el contador a 1 después de añadir
+      toggleCarrito();
     }
 
     function toggleCarrito() {
@@ -178,7 +213,7 @@
 
       const totalItems = cart.reduce((acc, item) => acc + item.cantidad, 0);
       if(totalItems > 0) { countBadge.innerText = totalItems; countBadge.classList.remove('hidden'); }
-      else { countBadge.textCount = 0; countBadge.classList.add('hidden'); }
+      else { countBadge.classList.add('hidden'); }
 
       if(cart.length === 0) {
         contenedor.innerHTML = '<p class="text-xs font-light text-neutral-400 text-center py-12">Tu carrito está vacío.</p>';
@@ -212,7 +247,7 @@
     }
 
     cargarDetalleProducto();
-    renderizarCarrito(); // Burbuja inicial de carga
+    renderizarCarrito();
   </script>
 </body>
 </html>
