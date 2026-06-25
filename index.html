@@ -61,13 +61,10 @@
   </nav>
 
   <section class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
-    
     <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
       <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4" type="video/mp4" />
     </video>
-
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/30 backdrop-blur-[1px] z-10"></div>
-
     <div class="relative z-20 text-center text-white px-4 max-w-2xl">
       <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
       <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">
@@ -77,11 +74,9 @@
         Ver Preventas Especiales
       </a>
     </div>
-
   </section>
 
   <section class="max-w-7xl mx-auto px-6 py-20">
-    
     <div class="flex items-end justify-between mb-12">
       <div>
         <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-2">Próximos Lanzamientos</span>
@@ -95,68 +90,74 @@
   </section>
 
   <script>
-    // Configuración con tus llaves reales del panel de Supabase
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTcxNTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    try {
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function cargarProductos() {
-      // Jalar datos en vivo de tu tabla 'productos' por ID
-      const { data: productos, error } = await supabaseClient
-        .from('productos')
-        .select('*')
-        .order('id', { ascending: true });
+      async function cargarProductos() {
+        const grid = document.getElementById('grid-productos');
 
-      if (error) {
-        console.error('Error al conectar con el catálogo:', error);
-        document.getElementById('grid-productos').innerHTML = `
-          <p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">
-            Error al conectar con el inventario de Supabase.
-          </p>`;
-        return;
+        const { data: productos, error } = await supabaseClient
+          .from('productos')
+          .select('*')
+          .order('id', { ascending: true });
+
+        if (error) {
+          console.error('Error al conectar con Supabase:', error);
+          grid.innerHTML = `
+            <p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">
+              Error al conectar con el inventario: ${error.message || error.details}
+            </p>`;
+          return;
+        }
+
+        grid.innerHTML = ''; // Limpiar el mensaje de carga
+
+        if (!productos || productos.length === 0) {
+          grid.innerHTML = `
+            <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">
+              No hay productos registrados en tu base de datos.
+            </p>`;
+          return;
+        }
+
+        // Armado automático de las tarjetas con tus datos reales
+        productos.forEach(prod => {
+          const tieneEtiqueta = prod.etiqueta ? true : false;
+          const esSale = prod.etiqueta?.toLowerCase() === 'sale';
+          const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
+
+          const tarjetaHTML = `
+            <div class="group cursor-pointer">
+              <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
+                <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
+                ${tieneEtiqueta ? `
+                  <span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">
+                    ${prod.etiqueta}
+                  </span>
+                ` : ''}
+              </div>
+              <div class="space-y-1 px-1">
+                <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'}</p>
+                <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
+                <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
+              </div>
+            </div>
+          `;
+          grid.innerHTML += tarjetaHTML;
+        });
       }
 
-      const grid = document.getElementById('grid-productos');
-      grid.innerHTML = ''; // Limpiar el cargando
-
-      if (productos.length === 0) {
-        grid.innerHTML = `
-          <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">
-            No hay productos registrados en tu base de datos.
-          </p>`;
-        return;
-      }
-
-      // Construcción automatizada de tus tarjetas elegantes
-      productos.forEach(prod => {
-        const tieneEtiqueta = prod.etiqueta ? true : false;
-        const esSale = prod.etiqueta?.toLowerCase() === 'sale';
-        const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
-
-        const tarjetaHTML = `
-          <div class="group cursor-pointer">
-            <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-              <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
-              ${tieneEtiqueta ? `
-                <span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">
-                  ${prod.etiqueta}
-                </span>
-              ` : ''}
-            </div>
-            <div class="space-y-1 px-1">
-              <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'}</p>
-              <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
-              <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
-            </div>
-          </div>
-        `;
-        grid.innerHTML += tarjetaHTML;
-      });
+      cargarProductos();
+    } catch (err) {
+      console.error('Error crítico de inicialización:', err);
+      document.getElementById('grid-productos').innerHTML = `
+        <p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">
+          Error crítico al iniciar el cliente de base de datos.
+        </p>`;
     }
-
-    // Iniciar la carga al abrir la web
-    cargarProductos();
   </script>
 
 </body>
