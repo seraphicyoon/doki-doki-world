@@ -25,13 +25,20 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- COLUMNA IZQUIERDA: CONFIGS (VIDEO Y NUEVO PRODUCTO) -->
+      <!-- COLUMNA IZQUIERDA: CONFIGS -->
       <div class="space-y-6 md:col-span-1">
-        <!-- CONTROL DE VIDEO -->
+        <!-- CONTROL DE VIDEO AUTOMÁTICO -->
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
-          <input type="text" id="video-url-input" class="w-full p-2 border rounded-xl text-xs" placeholder="URL directa de tu video (debe terminar en .mp4)">
-          <button onclick="actualizarVideo()" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500">Actualizar Video</button>
+          
+          <label class="block text-xs text-zinc-500 font-medium">Subir nuevo video (.mp4):</label>
+          <input type="file" id="video-file-input" accept="video/mp4" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 cursor-pointer">
+          
+          <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">
+            Subir y Cambiar Video
+          </button>
+          
+          <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo archivo... por favor espera.</div>
         </div>
 
         <!-- AGREGAR PRODUCTO -->
@@ -46,7 +53,7 @@
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA: LISTADO DE PRODUCTOS -->
+      <!-- COLUMNA DERECHA: LISTADO -->
       <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
         <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-4">Inventario Actual</h2>
         <div id="admin-lista-productos" class="space-y-4 divide-y divide-zinc-100 max-h-[70vh] overflow-y-auto pr-2">
@@ -61,7 +68,6 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Tu contraseña para ingresar al panel
     const CONFIG_PASSWORD = 'catcosmicadmin'; 
 
     function verificarAcceso() {
@@ -76,17 +82,11 @@
     }
 
     async function cargarDatosPanel() {
-      // 1. Cargar Video actual de la tabla configuracion
-      const { data: config } = await supabaseClient.from('configuracion').select('*').eq('clave', 'video_hero').single();
-      if(config) document.getElementById('video-url-input').value = config.valor;
-
-      // 2. Cargar lista de productos apuntando correctamente a "Productos" (P mayúscula)
       const { data: productos, error } = await supabaseClient.from('Productos').select('*').order('id', { ascending: false });
       const lista = document.getElementById('admin-lista-productos');
       lista.innerHTML = '';
 
       if (error) {
-        console.error('Error al cargar inventario:', error);
         lista.innerHTML = '<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla Productos.</p>';
         return;
       }
@@ -112,15 +112,55 @@
       });
     }
 
-    async function actualizarVideo() {
-      const url = document.getElementById('video-url-input').value;
-      if(!url) { alert('Introduce una URL válida'); return; }
+    // NUEVA FUNCIÓN AUTOMÁTICA DESDE TU PANEL
+    async function subirYActualizarVideo() {
+      const fileInput = document.getElementById('video-file-input');
+      const statusText = document.getElementById('video-status');
+      const btn = document.getElementById('btn-video');
       
-      const { error } = await supabaseClient.from('configuracion').update({ valor: url }).eq('clave', 'video_hero');
-      if (error) {
-        alert('Error al guardar el video: ' + error.message);
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Por favor, selecciona primero un archivo .mp4 desde tu dispositivo.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      // Creamos un nombre único usando la fecha actual para evitar que choque con videos viejos
+      const fileExtension = file.name.split('.').pop();
+      const fileName = `hero_video_${Date.now()}.${fileExtension}`;
+
+      // Mostrar barra de carga
+      statusText.classList.remove('hidden');
+      btn.disabled = true;
+
+      // 1. Subir directo al bucket "videos" en Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabaseClient.storage
+        .from('videos')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+      if (uploadError) {
+        alert('Error al subir el archivo a Supabase Storage: ' + uploadError.message);
+        statusText.classList.add('hidden');
+        btn.disabled = false;
+        return;
+      }
+
+      // 2. Construir la URL pública generada automáticamente
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/videos/${fileName}`;
+
+      // 3. Guardar esa URL en tu tabla 'configuracion'
+      const { error: dbError } = await supabaseClient
+        .from('configuracion')
+        .update({ valor: publicUrl })
+        .eq('clave', 'video_hero');
+
+      statusText.classList.add('hidden');
+      btn.disabled = false;
+
+      if (dbError) {
+        alert('El video se subió pero falló al actualizar la tienda: ' + dbError.message);
       } else {
-        alert('¡Video de fondo actualizado con éxito! Recarga tu catálogo principal.');
+        alert('¡Video subido y actualizado con éxito en alta definición!');
+        fileInput.value = ''; // Limpiar el campo
       }
     }
 
@@ -139,7 +179,6 @@
         alert('Error al guardar producto: ' + error.message);
       } else {
         alert('¡Álbum guardado con éxito!');
-        // Limpiar campos
         document.getElementById('p-titulo').value = '';
         document.getElementById('p-artista').value = '';
         document.getElementById('p-precio').value = '';
@@ -152,11 +191,7 @@
     async function eliminarProducto(id) {
       if(confirm('¿Segura que quieres eliminar este artículo del catálogo?')) {
         const { error } = await supabaseClient.from('Productos').delete().eq('id', id);
-        if (error) {
-          alert('Error al eliminar: ' + error.message);
-        } else {
-          cargarDatosPanel();
-        }
+        if (error) { alert('Error al eliminar: ' + error.message); } else { cargarDatosPanel(); }
       }
     }
   </script>
