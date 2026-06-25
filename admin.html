@@ -26,27 +26,30 @@
       <div class="space-y-6 md:col-span-1">
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
-          <label class="block text-xs text-zinc-500 font-medium">Subir nuevo video (.mp4):</label>
           <input type="file" id="video-file-input" accept="video/mp4" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 cursor-pointer">
-          <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">Subir y Cambiar Video</button>
-          <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo archivo... por favor espera.</div>
+          <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">Subir Video</button>
+          <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo video...</div>
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
-          <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Añadir Nuevo Artículo</h2>
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Añadir Artículo</h2>
           <input type="text" id="p-titulo" class="w-full p-2 border rounded-xl text-xs" placeholder="Título del álbum">
           <input type="text" id="p-artista" class="w-full p-2 border rounded-xl text-xs" placeholder="Artista / Grupo">
           <input type="number" id="p-precio" class="w-full p-2 border rounded-xl text-xs" placeholder="Precio (MXN)">
-          <input type="text" id="p-imagen" class="w-full p-2 border rounded-xl text-xs" placeholder="URL de la imagen de portada">
           <input type="text" id="p-etiqueta" class="w-full p-2 border rounded-xl text-xs" placeholder="Etiqueta (Pre-Order, Sale, etc.) o vacío">
-          <button onclick="agregarProducto()" class="w-full bg-zinc-900 text-white p-2 rounded-xl text-xs font-medium hover:bg-zinc-800">Guardar Artículo</button>
+          <textarea id="p-descripcion" rows="3" class="w-full p-2 border rounded-xl text-xs" placeholder="Descripción del producto (Contenido del álbum, inclusiones, fechas...)"></textarea>
+          
+          <label class="block text-[11px] text-zinc-500 font-medium">Imagen de portada (.jpg, .png):</label>
+          <input type="file" id="p-imagen-file" accept="image/*" class="w-full text-xs text-zinc-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-zinc-100 cursor-pointer">
+          
+          <button onclick="agregarProducto()" id="btn-producto" class="w-full bg-zinc-900 text-white p-2 rounded-xl text-xs font-medium hover:bg-zinc-800 transition">Guardar Artículo</button>
         </div>
       </div>
 
       <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
         <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-4">Inventario Actual</h2>
-        <div id="admin-lista-productos" class="space-y-4 divide-y divide-zinc-100 max-h-[70vh] overflow-y-auto pr-2">
-          <p class="text-xs text-zinc-400">Cargando artículos...</p>
+        <div id="admin-lista-productos" class="space-y-4 divide-y divide-zinc-100 max-h-[75vh] overflow-y-auto pr-2">
+          <p class="text-xs text-zinc-400">Cargando...</p>
         </div>
       </div>
     </div>
@@ -56,12 +59,10 @@
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const CONFIG_PASSWORD = 'catcosmicadmin'; 
 
     function verificarAcceso() {
-      const pass = document.getElementById('admin-pass').value;
-      if(pass === CONFIG_PASSWORD) {
+      if(document.getElementById('admin-pass').value === CONFIG_PASSWORD) {
         document.getElementById('login-block').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
         cargarDatosPanel();
@@ -71,113 +72,84 @@
     }
 
     async function cargarDatosPanel() {
-      // APUNTANDO DIRECTAMENTE A "productos" EN MINÚSCULA
       const { data: productos, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
       const lista = document.getElementById('admin-lista-productos');
       lista.innerHTML = '';
-
-      if (error) {
-        lista.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla productos. Código: ${error.code}</p>`;
-        return;
-      }
-
-      if(!productos || productos.length === 0) {
-        lista.innerHTML = '<p class="text-xs text-zinc-400 py-4 text-center">No hay productos en inventario.</p>';
-        return;
-      }
+      if (error) { lista.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Error: ${error.code}</p>`; return; }
+      if(!productos || productos.length === 0) { lista.innerHTML = '<p class="text-xs text-zinc-400 py-4 text-center">Sin artículos.</p>'; return; }
 
       productos.forEach(prod => {
         lista.innerHTML += `
           <div class="flex items-center justify-between pt-4 first:pt-0">
             <div class="flex items-center space-x-3">
-              <img src="${prod.imagen}" class="w-12 h-12 object-cover rounded-lg bg-zinc-100" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80'">
+              <img src="${prod.imagen}" class="w-12 h-12 object-cover rounded-lg bg-zinc-100">
               <div>
                 <h4 class="text-xs font-semibold text-zinc-800">${prod.titulo}</h4>
                 <p class="text-[10px] text-zinc-400">${prod.artista || 'K-Pop'} · <span class="font-medium text-zinc-600">$${prod.precio} MXN</span></p>
               </div>
             </div>
-            <button onclick="eliminarProducto(${prod.id})" class="text-[10px] bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 font-medium transition">Eliminar</button>
+            <button onclick="eliminarProducto(${prod.id})" class="text-[10px] bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 font-medium">Eliminar</button>
           </div>
         `;
       });
-    }
-
-    async function subirYActualizarVideo() {
-      const fileInput = document.getElementById('video-file-input');
-      const statusText = document.getElementById('video-status');
-      const btn = document.getElementById('btn-video');
-      
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Por favor, selecciona primero un archivo .mp4.');
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const fileExtension = file.name.split('.').pop();
-      const fileName = `hero_video_${Date.now()}.${fileExtension}`;
-
-      statusText.classList.remove('hidden');
-      btn.disabled = true;
-
-      const { data: uploadData, error: uploadError } = await supabaseClient.storage
-        .from('videos')
-        .upload(fileName, file, { cacheControl: '3600', upsert: true });
-
-      if (uploadError) {
-        alert('Error al subir a Storage: ' + uploadError.message);
-        statusText.classList.add('hidden');
-        btn.disabled = false;
-        return;
-      }
-
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/videos/${fileName}`;
-
-      const { error: dbError } = await supabaseClient
-        .from('configuracion')
-        .update({ valor: publicUrl })
-        .eq('clave', 'video_hero');
-
-      statusText.classList.add('hidden');
-      btn.disabled = false;
-
-      if (dbError) {
-        alert('Video subido, pero falló al actualizar la base de datos: ' + dbError.message);
-      } else {
-        alert('¡Video subido y actualizado con éxito!');
-        fileInput.value = '';
-      }
     }
 
     async function agregarProducto() {
       const titulo = document.getElementById('p-titulo').value;
       const artista = document.getElementById('p-artista').value;
       const precio = parseFloat(document.getElementById('p-precio').value) || 0;
-      const imagen = document.getElementById('p-imagen').value;
       const etiqueta = document.getElementById('p-etiqueta').value || null;
+      const descripcion = document.getElementById('p-descripcion').value || '';
+      const imageFile = document.getElementById('p-imagen-file').files[0];
+      const btn = document.getElementById('btn-producto');
 
-      if(!titulo || !precio) { alert('Mínimo pon el título y el precio'); return; }
+      if(!titulo || !precio || !imageFile) { alert('Completa el título, el precio y selecciona una imagen.'); return; }
+      btn.disabled = true; btn.innerText = 'Guardando...';
 
-      // CAMBIADO A MINÚSCULA "productos"
-      const { error } = await supabaseClient.from('productos').insert([{ titulo, artista, precio, imagen, etiqueta }]);
-      
-      if (error) {
-        alert('Error al guardar producto: ' + error.message);
-      } else {
+      // Subir Imagen al Bucket "imagenes"
+      const imgName = `img_${Date.now()}_${imageFile.name.replace(/\s+/g, '_')}`;
+      const { error: uploadError } = await supabaseClient.storage.from('imagenes').upload(imgName, imageFile);
+
+      if(uploadError) { alert('Error imagen: ' + uploadError.message); btn.disabled = false; btn.innerText = 'Guardar Artículo'; return; }
+      const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/imagenes/${imgName}`;
+
+      // Insertar en la Base de Datos con descripción
+      const { error } = await supabaseClient.from('productos').insert([{ titulo, artista, precio, imagen: imageUrl, etiqueta, descripcion }]);
+      btn.disabled = false; btn.innerText = 'Guardar Artículo';
+
+      if (error) { alert('Error BD: ' + error.message); } else {
         alert('¡Álbum guardado con éxito!');
-        document.getElementById('p-titulo').value = '';
-        document.getElementById('p-artista').value = '';
-        document.getElementById('p-precio').value = '';
-        document.getElementById('p-imagen').value = '';
-        document.getElementById('p-etiqueta').value = '';
+        document.getElementById('p-titulo').value = ''; document.getElementById('p-artista').value = '';
+        document.getElementById('p-precio').value = ''; document.getElementById('p-etiqueta').value = '';
+        document.getElementById('p-descripcion').value = ''; document.getElementById('p-imagen-file').value = '';
         cargarDatosPanel();
       }
     }
 
+    async function subirYActualizarVideo() {
+      const fileInput = document.getElementById('video-file-input');
+      const statusText = document.getElementById('video-status');
+      const btn = document.getElementById('btn-video');
+      if (!fileInput.files || fileInput.files.length === 0) { alert('Selecciona un archivo .mp4'); return; }
+      
+      const file = fileInput.files[0];
+      const fileName = `hero_video_${Date.now()}.mp4`;
+      statusText.classList.remove('hidden'); btn.disabled = true;
+
+      const { error: uploadError } = await supabaseClient.storage.from('videos').upload(fileName, file, { cacheControl: '3600', upsert: true });
+      if (uploadError) { alert('Error: ' + uploadError.message); statusText.classList.add('hidden'); btn.disabled = false; return; }
+
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/videos/${fileName}`;
+      await supabaseClient.from('configuracion').update({ valor: publicUrl }).eq('clave', 'video_hero');
+      
+      statusText.classList.add('hidden'); btn.disabled = false;
+      alert('¡Video cambiado!'); fileInput.value = '';
+    }
+
     async function eliminarProducto(id) {
-      if(confirm('¿Segura que quieres eliminar este artículo del catálogo?')) {
-        // CAMBIADO A MINÚSCULA "productos"
-        const { error } = await supabaseClient.from('productos').delete().eq('id', id);
-        if (error) { alert('Error al eliminar: ' + error.message); } else { cargarDatosPanel(); }
+      if(confirm('¿Eliminar artículo?')) {
+        await supabaseClient.from('productos').delete().eq('id', id);
+        cargarDatosPanel();
       }
     }
   </script>
