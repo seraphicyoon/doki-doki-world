@@ -19,24 +19,18 @@
   <div id="admin-dashboard" class="max-w-5xl mx-auto hidden space-y-8">
     <div class="flex items-center justify-between border-b pb-4">
       <h1 class="text-2xl font-bold tracking-tight">Panel de Administración 🌟</h1>
-      <div class="flex items-center space-x-3">
-        <button onclick="forzarRecargaTablas()" class="text-xs bg-amber-50 border border-amber-200 text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-100 font-medium transition">🔄 Reparar Conexión</button>
-        <button onclick="location.reload()" class="text-xs bg-zinc-200 px-4 py-2 rounded-lg hover:bg-zinc-300">Cerrar Sesión</button>
-      </div>
+      <button onclick="location.reload()" class="text-xs bg-zinc-200 px-4 py-2 rounded-lg hover:bg-zinc-300">Cerrar Sesión</button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="space-y-6 md:col-span-1">
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
-          
           <label class="block text-xs text-zinc-500 font-medium">Subir nuevo video (.mp4):</label>
           <input type="file" id="video-file-input" accept="video/mp4" class="w-full text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 cursor-pointer">
-          
           <button onclick="subirYActualizarVideo()" id="btn-video" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500 transition disabled:opacity-50">
             Subir y Cambiar Video
           </button>
-          
           <div id="video-status" class="text-[10px] text-zinc-400 text-center hidden">Subiendo archivo... por favor espera.</div>
         </div>
 
@@ -66,25 +60,40 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const CONFIG_PASSWORD = 'catcosmicadmin'; 
+    let NOMBRE_TABLA_REAL = 'Productos'; // Por defecto intentamos con Mayúscula
 
     function verificarAcceso() {
       const pass = document.getElementById('admin-pass').value;
       if(pass === CONFIG_PASSWORD) {
         document.getElementById('login-block').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
-        cargarDatosPanel();
+        descubrirYCargarDatos();
       } else {
         document.getElementById('login-error').classList.remove('hidden');
       }
     }
 
+    // Función inteligente que detecta si tu tabla se llama "Productos" o "productos"
+    async function descubrirYCargarDatos() {
+      // Intento 1: Con P mayúscula
+      let { data, error } = await supabaseClient.from('Productos').select('*').limit(1);
+      
+      if (error && error.code === '42P01') {
+        // Si sale el error de que no existe, cambiamos automáticamente a minúsculas
+        NOMBRE_TABLA_REAL = 'productos';
+      }
+      
+      cargarDatosPanel();
+    }
+
     async function cargarDatosPanel() {
-      const { data: productos, error } = await supabaseClient.from('Productos').select('*').order('id', { ascending: false });
+      const { data: productos, error } = await supabaseClient.from(NOMBRE_TABLA_REAL).select('*').order('id', { ascending: false });
       const lista = document.getElementById('admin-lista-productos');
       lista.innerHTML = '';
 
       if (error) {
-        lista.innerHTML = '<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla Productos.</p>';
+        console.error("Error definitivo:", error);
+        lista.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla "${NOMBRE_TABLA_REAL}". Código: ${error.code}</p>`;
         return;
       }
 
@@ -107,20 +116,6 @@
           </div>
         `;
       });
-    }
-
-    // FUNCIÓN DE AUXILIO EN TU PROPIO PANEL
-    async function forzarRecargaTablas() {
-      const { error } = await supabaseClient.rpc('notify_api_reload');
-      // Si el RPC falla (porque no está creado), usamos una consulta SQL directa simulada para forzar el caché
-      const { error: errorSencillo } = await supabaseClient.from('Productos').select('id').limit(1);
-      
-      if (errorSencillo) {
-        alert("Intentando restablecer mapa de datos... Por favor intenta guardar tu producto de nuevo.");
-      } else {
-        alert("¡Conexión refrescada con éxito!");
-      }
-      cargarDatosPanel();
     }
 
     async function subirYActualizarVideo() {
@@ -178,7 +173,7 @@
 
       if(!titulo || !precio) { alert('Mínimo pon el título y el precio'); return; }
 
-      const { error } = await supabaseClient.from('Productos').insert([{ titulo, artista, precio, imagen, etiqueta }]);
+      const { error } = await supabaseClient.from(NOMBRE_TABLA_REAL).insert([{ titulo, artista, precio, imagen, etiqueta }]);
       
       if (error) {
         alert('Error al guardar producto: ' + error.message);
@@ -195,7 +190,7 @@
 
     async function eliminarProducto(id) {
       if(confirm('¿Segura que quieres eliminar este artículo del catálogo?')) {
-        const { error } = await supabaseClient.from('Productos').delete().eq('id', id);
+        const { error } = await supabaseClient.from(NOMBRE_TABLA_REAL).delete().eq('id', id);
         if (error) { alert('Error al eliminar: ' + error.message); } else { cargarDatosPanel(); }
       }
     }
