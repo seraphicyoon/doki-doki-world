@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doki Doki World | Mi Perfil</title>
+  <title>Doki Doki World | Mi Cuenta</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;500;600&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
@@ -20,7 +20,8 @@
 </head>
 <body class="bg-dokiBackground text-dokiDark antialiased min-h-screen flex flex-col">
 
-  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md border-b border-neutral-100">
+  <!-- NAVBAR -->
+  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md border-b border-neutral-100 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <a href="../index.html" class="text-xs tracking-widest uppercase font-light hover:text-dokiRosa transition">← Volver a la Tienda</a>
       <div class="text-center">
@@ -31,31 +32,137 @@
     </div>
   </nav>
 
-  <main class="flex-grow flex items-center justify-center p-6">
-    <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-sm border border-neutral-100 text-center space-y-6">
+  <!-- CONTENEDOR MI CUENTA -->
+  <main class="max-w-7xl w-full mx-auto px-6 py-12 flex-grow">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       
-      <div class="flex flex-col items-center space-y-3">
-        <div class="w-20 h-20 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-2xl shadow-inner select-none">
-          ✨
-        </div>
-        <div>
-          <h2 class="font-serif italic text-2xl text-dokiDark">¡Hola de nuevo!</h2>
-          <p id="user-email" class="text-xs font-light text-neutral-400 mt-1">cargando_usuario@mail.com</p>
-        </div>
-      </div>
+      <!-- MENÚ LATERAL (Estilo Captura 2) -->
+      <aside class="md:col-span-1 space-y-1">
+        <h2 class="text-xs tracking-widest uppercase font-bold text-neutral-400 px-3 mb-4">Mi Cuenta</h2>
+        <button onclick="cambiarSeccion('escritorio')" id="btn-escritorio" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider bg-dokiDark text-white transition">Escritorio</button>
+        <button onclick="cambiarSeccion('direcciones')" id="btn-direcciones" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider text-neutral-600 hover:bg-neutral-100 transition">Libreta de Direcciones</button>
+        <button onclick="cambiarSeccion('pedidos')" id="btn-pedidos" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider text-neutral-600 hover:bg-neutral-100 transition">Mis Pedidos</button>
+        <button onclick="cerrarSesion()" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider text-red-500 hover:bg-red-50 transition mt-6">Cerrar Sesión</button>
+      </aside>
 
-      <div class="space-y-3 pt-4 border-t border-neutral-50">
-        <a href="#" class="block w-full bg-neutral-50 hover:bg-neutral-100 text-neutral-700 py-3 px-4 rounded-xl text-xs font-medium tracking-wider uppercase transition text-center">
-          🛍️ Mis Pedidos / Compras
-        </a>
-        <a href="#" class="block w-full bg-neutral-50 hover:bg-neutral-100 text-neutral-700 py-3 px-4 rounded-xl text-xs font-medium tracking-wider uppercase transition text-center">
-          💖 Lista de Deseos
-        </a>
-        <button onclick="cerrarSesion()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-3 px-4 rounded-xl text-xs font-medium tracking-wider uppercase transition mt-4">
-          Cerrar Sesión
-        </button>
-      </div>
+      <!-- SECCIONES DE CONTENIDO INTERACTIVO -->
+      <section class="md:col-span-3 bg-white border border-neutral-100 rounded-3xl p-8 shadow-sm min-h-[50vh]">
+        
+        <!-- VISTA: ESCRITORIO -->
+        <div id="sec-escritorio" class="space-y-6">
+          <p class="text-sm font-light text-neutral-600">
+            Hola <span id="user-display-name" class="font-semibold text-dokiDark">usuario</span> (¿no eres tú? <a href="#" onclick="cerrarSesion()" class="text-dokiRosa hover:underline">Cerrar sesión</a>)
+          </p>
+          <p class="text-xs font-light leading-relaxed text-neutral-500 max-w-2xl">
+            Desde el panel de tu cuenta puedes visualizar tus pedidos recientes, gestionar tus direcciones de envío y facturación, y revisar los detalles de tu cuenta de forma segura.
+          </p>
+          
+          <!-- Accesos Rápidos de Bloques -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+            <div onclick="cambiarSeccion('direcciones')" class="border border-neutral-100 p-6 rounded-2xl text-center hover:shadow-md cursor-pointer transition space-y-2">
+              <span class="text-2xl">📍</span>
+              <h3 class="text-xs font-semibold tracking-wider uppercase text-neutral-700">Gestionar Direcciones</h3>
+            </div>
+            <div onclick="cambiarSeccion('pedidos')" class="border border-neutral-100 p-6 rounded-2xl text-center hover:shadow-md cursor-pointer transition space-y-2">
+              <span class="text-2xl">📦</span>
+              <h3 class="text-xs font-semibold tracking-wider uppercase text-neutral-700">Historial de Pedidos</h3>
+            </div>
+          </div>
+        </div>
 
+        <!-- VISTA: LIBRETA DE DIRECCIONES (Estilo Captura 3) -->
+        <div id="sec-direcciones" class="hidden space-y-8">
+          <div>
+            <h2 class="font-serif italic text-2xl text-dokiDark mb-1">Mis Direcciones</h2>
+            <p class="text-xs font-light text-neutral-400">Las siguientes direcciones se utilizarán de forma predeterminada en la página de pago.</p>
+          </div>
+
+          <!-- Grid de tipo de direcciones -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Dirección de Envío -->
+            <div class="border border-neutral-100 p-6 rounded-2xl space-y-4">
+              <h3 class="text-sm font-semibold uppercase tracking-wider text-neutral-700 pb-2 border-b">Dirección de Envío</h3>
+              <p id="resumen-envio" class="text-xs font-light text-neutral-500 leading-relaxed">No has configurado este tipo de dirección aún.</p>
+              <button onclick="abrirFormularioDireccion('envio')" class="bg-dokiDark text-white px-4 py-2 rounded-full text-[10px] font-medium tracking-widest uppercase hover:bg-dokiRosa transition shadow-sm">Editar Dirección</button>
+            </div>
+
+            <!-- Dirección de Facturación -->
+            <div class="border border-neutral-100 p-6 rounded-2xl space-y-4">
+              <h3 class="text-sm font-semibold uppercase tracking-wider text-neutral-700 pb-2 border-b">Dirección de Facturación</h3>
+              <p id="resumen-factura" class="text-xs font-light text-neutral-500 leading-relaxed">No has configurado este tipo de dirección aún.</p>
+              <button onclick="abrirFormularioDireccion('factura')" class="bg-dokiDark text-white px-4 py-2 rounded-full text-[10px] font-medium tracking-widest uppercase hover:bg-dokiRosa transition shadow-sm">Editar Dirección</button>
+            </div>
+          </div>
+
+          <!-- FORMULARIO EN ESPAÑOL (Estilo Capturas 4 y 5) -->
+          <div id="contenedor-formulario-dir" class="hidden border-t pt-8 mt-8 space-y-6">
+            <h3 id="titulo-form-dir" class="font-serif italic text-xl text-dokiDark">Editar Dirección</h3>
+            <form id="form-direccion" onsubmit="guardarDireccion(event)" class="space-y-4 max-w-2xl">
+              <input type="hidden" id="dir-tipo">
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Nombre *</label>
+                  <input type="text" id="dir-nombre" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+                </div>
+                <div>
+                  <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Apellidos *</label>
+                  <input type="text" id="dir-apellido" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Nombre de la Empresa (Opcional)</label>
+                <input type="text" id="dir-empresa" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+              </div>
+
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Dirección de la Calle *</label>
+                <input type="text" id="dir-calle" required placeholder="Número de casa y nombre de la calle / Colonia" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Ciudad / Municipio *</label>
+                  <input type="text" id="dir-ciudad" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+                </div>
+                <div>
+                  <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Estado *</label>
+                  <input type="text" id="dir-estado" required placeholder="Ej. Tamaulipas" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Código Postal (ZIP) *</label>
+                  <input type="text" id="dir-cp" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+                </div>
+                <div>
+                  <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">País / Región *</label>
+                  <input type="text" id="dir-pais" required value="México" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] tracking-widest uppercase font-medium text-neutral-400 mb-1">Teléfono *</label>
+                <input type="tel" id="dir-telefono" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50">
+              </div>
+
+              <div class="flex space-x-3 pt-2">
+                <button type="submit" id="btn-guardar-dir" class="bg-dokiDark text-white px-6 py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition shadow-sm">Guardar Dirección</button>
+                <button type="button" onclick="document.getElementById('contenedor-formulario-dir').classList.add('hidden')" class="bg-neutral-100 text-neutral-600 px-6 py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-neutral-200 transition">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- VISTA: PEDIDOS -->
+        <div id="sec-pedidos" class="hidden space-y-4">
+          <h2 class="font-serif italic text-2xl text-dokiDark mb-4">Mis Pedidos</h2>
+          <p class="text-xs text-neutral-400">Aún no has realizado ninguna orden de compra.</p>
+        </div>
+
+      </section>
     </div>
   </main>
 
@@ -64,17 +171,136 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function verificarPerfil() {
+    let datosDireccionesGlobales = null;
+    let userIdActual = null;
+
+    async function comprobarSesion() {
       const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
       
-      // Si no hay sesión, lo saca al login
-      if (!session) {
-        window.location.href = 'login.html';
-        return;
+      userIdActual = session.user.id;
+      document.getElementById('user-display-name').innerText = session.user.email.split('@')[0];
+      cargarDireccionesBase();
+    }
+
+    async function cargarDireccionesBase() {
+      const { data, error } = await supabaseClient.from('direcciones').select('*').eq('user_id', userIdActual).maybeSingle();
+      
+      if (data) {
+        datosDireccionesGlobales = data;
+        // Renderizar Resumen Envío
+        if(data.envio_nombre) {
+          document.getElementById('resumen-envio').innerHTML = `
+            <strong>${data.envio_nombre} ${data.envio_apellido}</strong><br>
+            ${data.envio_empresa ? data.envio_empresa + '<br>' : ''}
+            ${data.envio_calle}<br>
+            ${data.envio_ciudad}, ${data.envio_estado}, CP ${data.envio_cp}<br>
+            ${data.envio_pais}<br>
+            📞 Tel: ${data.envio_telefono}
+          `;
+        }
+        // Renderizar Resumen Facturación
+        if(data.factura_nombre) {
+          document.getElementById('resumen-factura').innerHTML = `
+            <strong>${data.factura_nombre} ${data.factura_apellido}</strong><br>
+            ${data.factura_empresa ? data.factura_empresa + '<br>' : ''}
+            ${data.factura_calle}<br>
+            ${data.factura_ciudad}, ${data.factura_estado}, CP ${data.factura_cp}<br>
+            ${data.factura_pais}<br>
+            📞 Tel: ${data.factura_telefono}
+          `;
+        }
+      }
+    }
+
+    function cambiarSeccion(seccion) {
+      document.getElementById('sec-escritorio').classList.add('hidden');
+      document.getElementById('sec-direcciones').classList.add('hidden');
+      document.getElementById('sec-pedidos').classList.add('hidden');
+      
+      document.getElementById('btn-escritorio').className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider text-neutral-600 hover:bg-neutral-100 transition";
+      document.getElementById('btn-direcciones').className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider text-neutral-600 hover:bg-neutral-100 transition";
+      document.getElementById('btn-pedidos').className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider text-neutral-600 hover:bg-neutral-100 transition";
+
+      if (seccion === 'escritorio') {
+        document.getElementById('sec-escritorio').classList.remove('hidden');
+        document.getElementById('btn-escritorio').className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider bg-dokiDark text-white transition";
+      } else if (seccion === 'direcciones') {
+        document.getElementById('sec-direcciones').classList.remove('hidden');
+        document.getElementById('btn-direcciones').className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider bg-dokiDark text-white transition";
+      } else if (seccion === 'pedidos') {
+        document.getElementById('sec-pedidos').classList.remove('hidden');
+        document.getElementById('btn-pedidos').className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider bg-dokiDark text-white transition";
+      }
+    }
+
+    function abrirFormularioDireccion(tipo) {
+      document.getElementById('contenedor-formulario-dir').classList.remove('hidden');
+      document.getElementById('dir-tipo').value = tipo;
+      document.getElementById('titulo-form-dir').innerText = tipo === 'envio' ? 'Editar Dirección de Envío' : 'Editar Dirección de Facturación';
+
+      // Cargar datos previos si existen
+      const pfx = tipo === 'envio' ? 'envio_' : 'factura_';
+      if (datosDireccionesGlobales) {
+        document.getElementById('dir-nombre').value = datosDireccionesGlobales[pfx + 'nombre'] || '';
+        document.getElementById('dir-apellido').value = datosDireccionesGlobales[pfx + 'apellido'] || '';
+        document.getElementById('dir-empresa').value = datosDireccionesGlobales[pfx + 'empresa'] || '';
+        document.getElementById('dir-calle').value = datosDireccionesGlobales[pfx + 'calle'] || '';
+        document.getElementById('dir-ciudad').value = datosDireccionesGlobales[pfx + 'ciudad'] || '';
+        document.getElementById('dir-estado').value = datosDireccionesGlobales[pfx + 'estado'] || '';
+        document.getElementById('dir-cp').value = datosDireccionesGlobales[pfx + 'cp'] || '';
+        document.getElementById('dir-pais').value = datosDireccionesGlobales[pfx + 'pais'] || 'México';
+        document.getElementById('dir-telefono').value = datosDireccionesGlobales[pfx + 'telefono'] || '';
+      } else {
+        document.getElementById('form-direccion').reset();
+        document.getElementById('dir-pais').value = 'México';
+      }
+      
+      // Auto-scrollear al formulario
+      document.getElementById('contenedor-formulario-dir').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function guardarDireccion(e) {
+      e.preventDefault();
+      const tipo = document.getElementById('dir-tipo').value;
+      const btn = document.getElementById('btn-guardar-dir');
+      btn.disabled = true; btn.innerText = "GUARDANDO...";
+
+      const pfx = tipo === 'envio' ? 'envio_' : 'factura_';
+      
+      const payload = {
+        user_id: userIdActual,
+        [pfx + 'nombre']: document.getElementById('dir-nombre').value,
+        [pfx + 'apellido']: document.getElementById('dir-apellido').value,
+        [pfx + 'empresa']: document.getElementById('dir-empresa').value,
+        [pfx + 'calle']: document.getElementById('dir-calle').value,
+        [pfx + 'ciudad']: document.getElementById('dir-ciudad').value,
+        [pfx + 'estado']: document.getElementById('dir-estado').value,
+        [pfx + 'cp']: document.getElementById('dir-cp').value,
+        [pfx + 'pais']: document.getElementById('dir-pais').value,
+        [pfx + 'telefono']: document.getElementById('dir-telefono').value,
+      };
+
+      let error;
+      if (datosDireccionesGlobales) {
+        // Actualizar registro existente
+        const res = await supabaseClient.from('direcciones').update(payload).eq('user_id', userIdActual);
+        error = res.error;
+      } else {
+        // Insertar nuevo registro
+        const res = await supabaseClient.from('direcciones').insert([payload]);
+        error = res.error;
       }
 
-      // Pone el correo real del usuario logueado
-      document.getElementById('user-email').innerText = session.user.email;
+      btn.disabled = false; btn.innerText = "Guardar Dirección";
+
+      if (error) {
+        alert("Error al salvar la dirección: " + error.message);
+      } else {
+        alert("¡Dirección guardada exitosamente!");
+        document.getElementById('contenedor-formulario-dir').class = 'hidden';
+        window.location.reload();
+      }
     }
 
     async function cerrarSesion() {
@@ -82,7 +308,7 @@
       window.location.href = '../index.html';
     }
 
-    verificarPerfil();
+    comprobarSesion();
   </script>
 </body>
 </html>
