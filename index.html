@@ -96,10 +96,8 @@
 
   <script>
     // Configuración con tus llaves reales del panel de Supabase
-    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE
-
-https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/'; // Pega aquí tu Anon Key completa
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTcxNTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -112,11 +110,23 @@ https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/'; // Pega aquí tu Anon Key co
 
       if (error) {
         console.error('Error al conectar con el catálogo:', error);
+        document.getElementById('grid-productos').innerHTML = `
+          <p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">
+            Error al conectar con el inventario de Supabase.
+          </p>`;
         return;
       }
 
       const grid = document.getElementById('grid-productos');
       grid.innerHTML = ''; // Limpiar el cargando
+
+      if (productos.length === 0) {
+        grid.innerHTML = `
+          <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">
+            No hay productos registrados en tu base de datos.
+          </p>`;
+        return;
+      }
 
       // Construcción automatizada de tus tarjetas elegantes
       productos.forEach(prod => {
@@ -127,7 +137,7 @@ https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/'; // Pega aquí tu Anon Key co
         const tarjetaHTML = `
           <div class="group cursor-pointer">
             <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-              <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
               ${tieneEtiqueta ? `
                 <span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">
                   ${prod.etiqueta}
@@ -135,9 +145,9 @@ https://zjplkxjcbkqdnepzdwqf.supabase.co/rest/v1/'; // Pega aquí tu Anon Key co
               ` : ''}
             </div>
             <div class="space-y-1 px-1">
-              <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista}</p>
+              <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'}</p>
               <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
-              <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
+              <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
             </div>
           </div>
         `;
