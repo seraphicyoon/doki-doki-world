@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doki Doki World | Buscar por Categorías</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=200;300;400;500&family=Playfair+Display:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { dokiBackground: '#FBF9FC', dokiDark: '#111111', dokiRosa: '#E55B92', dokiLila: '#934B8B' },
+          fontFamily: { sans: ['Montserrat', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dokiBackground text-dokiDark antialiased min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-40 border-b border-neutral-100">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
+        <a href="index.html" class="hover:text-dokiRosa transition">Inicio</a>
+        <a href="index.html#seccion-preventas" class="hover:text-dokiRosa transition">Preventas</a>
+        <a href="categorias.html" class="text-dokiRosa font-medium transition">Categorías</a>
+      </div>
+      <div class="text-center">
+        <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
+        <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
+      </div>
+      <div class="w-24"></div> 
+    </div>
+  </nav>
+
+  <!-- CONTENEDOR DE FILTROS -->
+  <main class="max-w-7xl w-full mx-auto px-6 py-12 flex-grow space-y-8">
+    
+    <!-- BARRA DE BÚSQUEDA DINÁMICA -->
+    <div class="max-w-xl mx-auto text-center space-y-4">
+      <h1 class="font-serif italic text-3xl tracking-wide">Explora el Catálogo</h1>
+      <input type="text" id="input-busqueda" oninput="filtrarCatalogoCompleto()" placeholder="Buscar álbum, grupo o artista..." class="w-full p-3.5 border border-neutral-200 rounded-2xl text-xs bg-white shadow-sm focus:outline-none focus:border-dokiRosa">
+    </div>
+
+    <!-- BOTONES DE CATEGORÍAS (GRUPOS) -->
+    <div class="space-y-2 text-center">
+      <span class="text-[9px] tracking-[0.2em] uppercase font-semibold text-neutral-400 block">Filtrar por Grupo</span>
+      <div id="contenedor-botones-cat" class="flex flex-wrap justify-center gap-2">
+        <button onclick="seleccionarCategoriaFiltro('Todos')" id="btn-cat-Todos" class="px-5 py-2 rounded-full text-xs font-medium uppercase tracking-wider bg-dokiDark text-white transition shadow-sm">Todos</button>
+        <!-- Los grupos de Supabase se cargan aquí -->
+      </div>
+    </div>
+
+    <!-- REJILLA DE PRODUCTOS RESULTANTES -->
+    <section class="pt-8">
+      <div id="grid-categorias-productos" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+        <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">Cargando inventario completo...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let todosLosProductosGlobal = [];
+    let categoriaSeleccionadaActual = "Todos";
+
+    async function inicializarCategorias() {
+      // 1. Obtener grupos de la tabla categorias
+      const { data: cats } = await supabaseClient.from('categorias').select('nombre').order('nombre', { ascending: true });
+      const contenedorBotones = document.getElementById('contenedor-botones-cat');
+      
+      if(cats) {
+        cats.forEach(c => {
+          contenedorCapitalizado = c.nombre;
+          contenedorBotones.innerHTML += `
+            <button onclick="seleccionarCategoriaFiltro('${c.nombre}')" id="btn-cat-${c.nombre}" class="px-5 py-2 rounded-full text-xs font-medium uppercase tracking-wider bg-white border border-neutral-200 text-neutral-600 hover:border-dokiRosa transition shadow-sm">${c.nombre}</button>
+          `;
+        });
+      }
+
+      // 2. Obtener todo el catálogo
+      const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: true });
+      todosLosProductosGlobal = prods || [];
+      
+      filtrarCatalogoCompleto();
+    }
+
+    function seleccionarCategoriaFiltro(nombreCat) {
+      // Remover estilo activo del botón anterior
+      const btnAnterior = document.getElementById(`btn-cat-${categoriaSeleccionadaActual}`);
+      if(btnAnterior) {
+        btnAnterior.className = "px-5 py-2 rounded-full text-xs font-medium uppercase tracking-wider bg-white border border-neutral-200 text-neutral-600 hover:border-dokiRosa transition shadow-sm";
+      }
+
+      categoriaSeleccionadaActual = nombreCat;
+
+      // Poner estilo activo al botón seleccionado
+      const btnNuevo = document.getElementById(`btn-cat-${nombreCat}`);
+      if(btnNuevo) {
+        btnNuevo.className = "px-5 py-2 rounded-full text-xs font-medium uppercase tracking-wider bg-dokiDark text-white transition shadow-sm";
+      }
+
+      filtrarCatalogoCompleto();
+    }
+
+    function filtrarCatalogoCompleto() {
+      const queryBusqueda = document.getElementById('input-busqueda').value.toLowerCase().trim();
+      const grid = document.getElementById('grid-categorias-productos');
+      grid.innerHTML = '';
+
+      // Filtrar el array global por categoría + barra de búsqueda
+      const productosFiltrados = todosLosProductosGlobal.filter(p => {
+        const matchesCategoria = (categoriaSeleccionadaActual === "Todos") || (p.categoria === categoriaSeleccionadaActual);
+        
+        const stringFiltro = `${p.titulo} ${p.artista} ${p.descripcion}`.toLowerCase();
+        const matchesBusqueda = stringFiltro.includes(queryBusqueda);
+
+        return matchesCategoria && matchesBusqueda;
+      });
+
+      if(productosFiltrados.length === 0) {
+        grid.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-16 tracking-widest uppercase">No se encontraron álbumes que coincidan.</p>`;
+        return;
+      }
+
+      // Renderizar resultados filtrados
+      productosFiltrados.forEach(prod => {
+        const tieneEtiqueta = prod.etiqueta ? true : false;
+        const esSale = prod.etiqueta?.toLowerCase() === 'sale';
+        const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
+
+        grid.innerHTML += `
+          <a href="producto.html?id=${prod.id}" class="group cursor-pointer block">
+            <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
+              <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600'"/>
+              ${tieneEtiqueta ? `<span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">${prod.etiqueta}</span>` : ''}
+            </div>
+            <div class="space-y-1 px-1">
+              <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'} · ${prod.categoria || 'General'}</p>
+              <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
+              <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
+            </div>
+          </a>
+        `;
+      });
+    }
+
+    inicializarCategorias();
+  </script>
+</body>
+</html>

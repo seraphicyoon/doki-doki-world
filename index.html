@@ -37,16 +37,16 @@
   <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-40 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
-        <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Inicio</a>
-        <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Preventas</a>
-        <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Categorías</a>
+        <a href="index.html" class="text-dokiRosa tracking-widest font-medium transition-colors duration-300">Inicio</a>
+        <a href="#seccion-preventas" class="hover:text-dokiRosa transition-colors duration-300">Preventas</a>
+        <a href="categorias.html" class="hover:text-dokiRosa transition-colors duration-300">Categorías</a>
       </div>
       <div class="text-center">
         <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
         <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
       </div>
       <div class="flex items-center space-x-6 text-sm font-light">
-        <a href="#" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
+        <a href="categorias.html" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
         
         <!-- BOTÓN DE CUENTA INTELIGENTE -->
         <a id="nav-auth-btn" href="account/login.html" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase font-medium text-neutral-600">Cuenta</a>
@@ -69,13 +69,9 @@
       </div>
       <button onclick="toggleCarrito()" class="text-xs uppercase tracking-widest text-neutral-400 hover:text-dokiDark">Cerrar ✕</button>
     </div>
-
-    <!-- Contenedor de lista de items -->
     <div id="carrito-items" class="flex-grow overflow-y-auto p-6 space-y-4 divide-y divide-neutral-50">
       <p class="text-xs font-light text-neutral-400 text-center py-12">Tu carrito está vacío actualmente.</p>
     </div>
-
-    <!-- Total y Botón de checkout -->
     <div class="p-6 border-t border-neutral-100 bg-neutral-50/50 space-y-4">
       <div class="flex items-center justify-between text-xs tracking-wide uppercase">
         <span class="font-light text-neutral-500">Subtotal:</span>
@@ -84,7 +80,6 @@
       <button onclick="irAlCheckout()" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition-all duration-300 shadow-sm">Proceder al Pago</button>
     </div>
   </div>
-  <!-- Fondo oscuro cuando el carrito esté abierto -->
   <div id="cart-overlay" onclick="toggleCarrito()" class="fixed top-0 left-0 w-full h-full bg-black/20 backdrop-blur-[1px] z-40 hidden"></div>
 
   <!-- ================= HERO SECTION ================= -->
@@ -94,19 +89,35 @@
     <div class="relative z-20 text-center text-white px-4 max-w-2xl pointer-events-auto">
       <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
       <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">Tu tienda mexicana de K-Pop · De fans para fans</p>
-      <a href="#" class="inline-block px-8 py-3 rounded-full border border-white text-white uppercase text-[10px] tracking-widest font-medium bg-transparent hover:bg-white hover:text-dokiDark transition-all duration-300">Ver Preventas Especiales</a>
+      <a href="#seccion-preventas" class="inline-block px-8 py-3 rounded-full border border-white text-white uppercase text-[10px] tracking-widest font-medium bg-transparent hover:bg-white hover:text-dokiDark transition-all duration-300">Ver Preventas Especiales</a>
     </div>
   </section>
 
-  <!-- ================= CATALOGUE SECTION ================= -->
-  <section class="max-w-7xl mx-auto px-6 py-20">
-    <div class="flex items-end justify-between mb-12">
-      <div>
-        <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-2">Próximos Lanzamientos</span>
-        <h2 class="font-serif italic text-3xl tracking-wide">Preventas Especiales</h2>
-      </div>
+  <!-- ================= SECCIÓN 1: PREVENTAS ESPECIALES ================= -->
+  <section id="seccion-preventas" class="max-w-7xl mx-auto px-6 py-16 hidden">
+    <div class="mb-8">
+      <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-1">Próximos Lanzamientos</span>
+      <h2 class="font-serif italic text-3xl tracking-wide">Preventas Especiales 🔥</h2>
     </div>
-    <div id="grid-productos" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+    <div id="grid-preventas" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12"></div>
+  </section>
+
+  <!-- ================= SECCIÓN 2: ÁLBUMES AUTOGRAFADOS ================= -->
+  <section id="seccion-autografiados" class="max-w-7xl mx-auto px-6 py-16 hidden">
+    <div class="mb-8">
+      <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-1">Ediciones de Colección</span>
+      <h2 class="font-serif italic text-3xl tracking-wide">Álbumes Autografiados ✍️</h2>
+    </div>
+    <div id="grid-autografiados" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12"></div>
+  </section>
+
+  <!-- ================= SECCIÓN 3: PRODUCTOS EN STOCK ================= -->
+  <section id="seccion-stock" class="max-w-7xl mx-auto px-6 py-16">
+    <div class="mb-8">
+      <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-1">Entrega Inmediata</span>
+      <h2 class="font-serif italic text-3xl tracking-wide">Productos en Stock ✨</h2>
+    </div>
+    <div id="grid-stock" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
       <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">Cargando catálogo...</p>
     </div>
   </section>
@@ -122,48 +133,65 @@
       const wrapper = document.getElementById('video-wrapper');
       let videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4'; 
       if (config && config.valor) { videoUrl = config.valor; }
+      wrapper.innerHTML = `<video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;"><source src="${videoUrl}" type="video/mp4" /></video>`;
+    }
 
-      wrapper.innerHTML = `
-        <video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;">
-          <source src="${videoUrl}" type="video/mp4" />
-        </video>
+    // ARMAR TARJETA HTML INDIVIDUAL
+    function crearTarjetaHTML(prod) {
+      const tieneEtiqueta = prod.etiqueta ? true : false;
+      const esSale = prod.etiqueta?.toLowerCase() === 'sale';
+      const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
+
+      return `
+        <a href="producto.html?id=${prod.id}" class="group cursor-pointer block">
+          <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
+            <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
+            ${tieneEtiqueta ? `<span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">${prod.etiqueta}</span>` : ''}
+          </div>
+          <div class="space-y-1 px-1">
+            <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'} ${prod.categoria ? `· ${prod.categoria}` : ''}</p>
+            <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
+            <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
+          </div>
+        </a>
       `;
     }
 
     async function cargarProductos() {
-      const grid = document.getElementById('grid-productos');
       const { data: productos, error } = await supabaseClient.from('productos').select('*').order('id', { ascending: true });
 
-      if (error) {
-        grid.innerHTML = `<p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">Error al conectar con el inventario.</p>`;
+      const gridPreventas = document.getElementById('grid-preventas');
+      const gridAutografiados = document.getElementById('grid-autografiados');
+      const gridStock = document.getElementById('grid-stock');
+
+      gridStock.innerHTML = '';
+
+      if (error || !productos || productos.length === 0) {
+        gridStock.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">No hay productos registrados.</p>`;
         return;
       }
 
-      grid.innerHTML = ''; 
-      if (!productos || productos.length === 0) {
-        grid.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">No hay productos registrados.</p>`;
-        return;
-      }
+      let contadorStock = 0;
 
       productos.forEach(prod => {
-        const tieneEtiqueta = prod.etiqueta ? true : false;
-        const esSale = prod.etiqueta?.toLowerCase() === 'sale';
-        const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
+        const htmlCard = crearTarjetaHTML(prod);
+        const seccion = prod.tipo_seccion || 'Productos en Stock';
 
-        grid.innerHTML += `
-          <a href="producto.html?id=${prod.id}" class="group cursor-pointer block">
-            <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
-              <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
-              ${tieneEtiqueta ? `<span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">${prod.etiqueta}</span>` : ''}
-            </div>
-            <div class="space-y-1 px-1">
-              <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'}</p>
-              <h3 class="text-sm font-light tracking-wide text-dokiDark group-hover:text-dokiRosa transition-colors duration-300 truncate">${prod.titulo}</h3>
-              <p class="text-xs font-medium tracking-wide mt-1 text-neutral-600">$ ${Number(prod.precio || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</p>
-            </div>
-          </a>
-        `;
+        if (seccion === 'Preventas') {
+          document.getElementById('seccion-preventas').classList.remove('hidden');
+          gridPreventas.innerHTML += htmlCard;
+        } else if (seccion === 'Autografiados') {
+          document.getElementById('seccion-autografiados').classList.remove('hidden');
+          gridAutografiados.innerHTML += htmlCard;
+        } else {
+          gridStock.innerHTML += htmlCard;
+          contadorStock++;
+        }
       });
+
+      if (contadorStock === 0) {
+        gridStock.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">No hay productos en stock inmediato por ahora.</p>`;
+      }
     }
 
     async function evaluarSesionNav() {
@@ -173,7 +201,6 @@
       else { authBtn.innerText = "Cuenta"; authBtn.href = "account/login.html"; }
     }
 
-    // LÓGICA DEL CARRITO GLOBAL
     function toggleCarrito() {
       const sidebar = document.getElementById('sidebar-carrito');
       const overlay = document.getElementById('cart-overlay');
@@ -188,7 +215,6 @@
       const totalText = document.getElementById('carrito-total');
       const countBadge = document.getElementById('cart-count');
 
-      // Actualizar burbuja flotante
       const totalItems = cart.reduce((acc, item) => acc + item.cantidad, 0);
       if(totalItems > 0) { countBadge.innerText = totalItems; countBadge.classList.remove('hidden'); }
       else { countBadge.classList.add('hidden'); }
@@ -201,7 +227,6 @@
 
       contenedor.innerHTML = '';
       let subtotal = 0;
-
       cart.forEach((item, index) => {
         subtotal += item.precio * item.cantidad;
         contenedor.innerHTML += `
@@ -215,7 +240,6 @@
           </div>
         `;
       });
-
       totalText.innerText = `$ ${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
     }
 
@@ -229,13 +253,13 @@
     function irAlCheckout() {
       const cart = JSON.parse(localStorage.getItem('doki_cart')) || [];
       if(cart.length === 0) { alert('Tu carrito está vacío.'); return; }
-      window.location.href = 'checkout.html'; // Próxima página a crear
+      window.location.href = 'checkout.html';
     }
 
     cargarVideoHero();
     cargarProductos();
     evaluarSesionNav();
-    renderizarCarrito(); // Cargar burbuja inicial
+    renderizarCarrito();
   </script>
 </body>
 </html>
