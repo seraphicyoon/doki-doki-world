@@ -17,10 +17,10 @@
       theme: {
         extend: {
           colors: {
-            dokiBackground: '#FBF9FC', // Fondo lila/grisáceo ultra claro y lujoso
-            dokiDark: '#111111',       // El color oscuro de la cabeza del gatito para textos
-            dokiRosa: '#E55B92',       // El rosa vibrante de los pétalos para acentos
-            dokiLila: '#934B8B',       // El lila intermedio de los pétalos
+            dokiBackground: '#FBF9FC',
+            dokiDark: '#111111',
+            dokiRosa: '#E55B92',
+            dokiLila: '#934B8B',
           },
           fontFamily: {
             sans: ['Montserrat', 'sans-serif'],
@@ -35,43 +35,30 @@
 
   <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      
       <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Inicio</a>
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Preventas</a>
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300">Categorías</a>
       </div>
-
       <div class="text-center">
         <span class="font-serif italic text-2xl tracking-wide">doki doki</span>
         <span class="block text-[9px] tracking-[0.3em] uppercase font-light text-neutral-400 -mt-1">world</span>
       </div>
-
       <div class="flex items-center space-x-6 text-sm font-light">
         <a href="#" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
-        <div class="relative cursor-pointer hover:text-dokiRosa transition-colors duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-          </svg>
-        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
       </div>
-
     </div>
   </nav>
 
-  <section class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
-    <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
-      <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4" type="video/mp4" />
-    </video>
-    <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/30 backdrop-blur-[1px] z-10"></div>
+  <section id="hero-container" class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black">
+    <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none scale-125">
+      </div>
+    <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/40 backdrop-blur-[1px] z-10"></div>
     <div class="relative z-20 text-center text-white px-4 max-w-2xl">
       <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
-      <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">
-        Tu tienda mexicana de K-Pop · De fans para fans
-      </p>
-      <a href="#" class="inline-block px-8 py-3 rounded-full border border-white text-white uppercase text-[10px] tracking-widest font-medium bg-transparent hover:bg-white hover:text-dokiDark transition-all duration-300">
-        Ver Preventas Especiales
-      </a>
+      <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">Tu tienda mexicana de K-Pop · De fans para fans</p>
+      <a href="#" class="inline-block px-8 py-3 rounded-full border border-white text-white uppercase text-[10px] tracking-widest font-medium bg-transparent hover:bg-white hover:text-dokiDark transition-all duration-300">Ver Preventas Especiales</a>
     </div>
   </section>
 
@@ -82,7 +69,6 @@
         <h2 class="font-serif italic text-3xl tracking-wide">Preventas Especiales</h2>
       </div>
     </div>
-
     <div id="grid-productos" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
       <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">Cargando catálogo...</p>
     </div>
@@ -95,48 +81,49 @@
     try {
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // 1. Cargar el Video de Fondo desde Supabase configuracion
+      // Cargar el Video de YouTube desde Supabase
       async function cargarVideoHero() {
-        const { data: config } = await supabaseClient
-          .from('configuracion')
-          .select('valor')
-          .eq('clave', 'video_hero')
-          .single();
-          
+        const { data: config } = await supabaseClient.from('configuracion').select('valor').eq('clave', 'video_hero').single();
+        const wrapper = document.getElementById('video-wrapper');
+        
+        // Si no hay nada o está el link viejo .mp4, usamos el ID de MEOVV por defecto
+        let videoId = 'QRSSyK8CgU0'; 
+        
         if (config && config.valor) {
-          const videoElement = document.querySelector('video source');
-          if (videoElement) {
-            videoElement.src = config.valor;
-            videoElement.parentElement.load(); // Actualizar el reproductor en vivo
+          // Si guardaste el iframe completo o la URL en tu admin, extraemos solo el ID del video
+          const match = config.valor.match(/(?:embed\/|v=)([a-zA-Z0-9_-]{11})/);
+          if (match && match[1]) {
+            videoId = match[1];
+          } else if (config.valor.length === 11) {
+            videoId = config.valor; // Si guardaste directamente el ID corto
           }
         }
+
+        // Insertar el iframe con autoplay, mute y loop obligatorio de YouTube
+        wrapper.innerHTML = `
+          <iframe class="w-full h-full object-cover" 
+            src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        `;
       }
 
-      // 2. Cargar los Productos desde la tabla "Productos" (P mayúscula)
+      // Cargar Productos (P mayúscula)
       async function cargarProductos() {
         const grid = document.getElementById('grid-productos');
-
-        const { data: productos, error } = await supabaseClient
-          .from('Productos')
-          .select('*')
-          .order('id', { ascending: true });
+        const { data: productos, error } = await supabaseClient.from('Productos').select('*').order('id', { ascending: true });
 
         if (error) {
-          console.error('Error al conectar con Supabase:', error);
-          grid.innerHTML = `
-            <p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">
-              Error al conectar con el inventario: ${error.message || error.details}
-            </p>`;
+          console.error(error);
+          grid.innerHTML = `<p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">Error al conectar con el inventario.</p>`;
           return;
         }
 
-        grid.innerHTML = ''; 
-
+        grid.innerHTML = '';
         if (!productos || productos.length === 0) {
-          grid.innerHTML = `
-            <p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">
-              No hay productos registrados en tu base de datos.
-            </p>`;
+          grid.innerHTML = `<p class="text-xs font-light text-neutral-400 col-span-full text-center py-10 tracking-widest uppercase">No hay productos registrados.</p>`;
           return;
         }
 
@@ -145,15 +132,11 @@
           const esSale = prod.etiqueta?.toLowerCase() === 'sale';
           const colorEtiqueta = esSale ? 'bg-dokiRosa text-white' : 'bg-white/90 text-dokiLila border border-neutral-100';
 
-          const tarjetaHTML = `
+          grid.innerHTML += `
             <div class="group cursor-pointer">
               <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
                 <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
-                ${tieneEtiqueta ? `
-                  <span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">
-                    ${prod.etiqueta}
-                  </span>
-                ` : ''}
+                ${tieneEtiqueta ? `<span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">${prod.etiqueta}</span>` : ''}
               </div>
               <div class="space-y-1 px-1">
                 <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'}</p>
@@ -162,22 +145,14 @@
               </div>
             </div>
           `;
-          grid.innerHTML += tarjetaHTML;
         });
       }
 
-      // Inicializar ambos elementos
       cargarVideoHero();
       cargarProductos();
-      
     } catch (err) {
-      console.error('Error crítico de inicialización:', err);
-      document.getElementById('grid-productos').innerHTML = `
-        <p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">
-          Error crítico al iniciar el cliente de base de datos.
-        </p>`;
+      document.getElementById('grid-productos').innerHTML = `<p class="text-xs font-light text-dokiRosa col-span-full text-center py-10 tracking-widest uppercase">Error crítico de inicialización.</p>`;
     }
   </script>
-
 </body>
 </html>
