@@ -9,6 +9,7 @@
 </head>
 <body class="bg-zinc-50 text-zinc-900 antialiased p-6">
 
+  <!-- LOGIN PANEL -->
   <div id="login-block" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-sm border border-zinc-200">
     <h2 class="text-xl font-bold mb-4 text-center">Doki Doki Admin</h2>
     <input type="password" id="admin-pass" class="w-full p-3 border rounded-xl mb-4 text-center" placeholder="Introduce tu contraseña">
@@ -16,6 +17,7 @@
     <p id="login-error" class="text-red-500 text-xs mt-2 text-center hidden">Contraseña incorrecta</p>
   </div>
 
+  <!-- MAIN ADMIN DASHBOARD -->
   <div id="admin-dashboard" class="max-w-5xl mx-auto hidden space-y-8">
     <div class="flex items-center justify-between border-b pb-4">
       <h1 class="text-2xl font-bold tracking-tight">Panel de Administración 🌟</h1>
@@ -23,13 +25,16 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- COLUMNA IZQUIERDA: CONFIGS (VIDEO Y NUEVO PRODUCTO) -->
       <div class="space-y-6 md:col-span-1">
+        <!-- CONTROL DE VIDEO -->
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Video de Fondo</h2>
-          <input type="text" id="video-url-input" class="w-full p-2 border rounded-xl text-xs" placeholder="URL del video .mp4">
+          <input type="text" id="video-url-input" class="w-full p-2 border rounded-xl text-xs" placeholder="URL de YouTube (Normal o de Celular)">
           <button onclick="actualizarVideo()" class="w-full bg-emerald-600 text-white p-2 rounded-xl text-xs font-medium hover:bg-emerald-500">Actualizar Video</button>
         </div>
 
+        <!-- AGREGAR PRODUCTO -->
         <div class="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-3">
           <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Añadir Nuevo Artículo</h2>
           <input type="text" id="p-titulo" class="w-full p-2 border rounded-xl text-xs" placeholder="Título del álbum">
@@ -41,6 +46,7 @@
         </div>
       </div>
 
+      <!-- COLUMNA DERECHA: LISTADO DE PRODUCTOS -->
       <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
         <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-4">Inventario Actual</h2>
         <div id="admin-lista-productos" class="space-y-4 divide-y divide-zinc-100 max-h-[70vh] overflow-y-auto pr-2">
@@ -55,7 +61,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTcxNTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // CAMBIA ESTA PALABRA POR TU CONTRASEÑA PREFERIDA PARA EL PANEL:
+    // Tu contraseña para ingresar al panel
     const CONFIG_PASSWORD = 'catcosmicadmin'; 
 
     function verificarAcceso() {
@@ -70,14 +76,20 @@
     }
 
     async function cargarDatosPanel() {
-      // 1. Cargar Video actual
+      // 1. Cargar Video actual de la tabla configuracion
       const { data: config } = await supabaseClient.from('configuracion').select('*').eq('clave', 'video_hero').single();
       if(config) document.getElementById('video-url-input').value = config.valor;
 
-      // 2. Cargar lista de productos apuntando a "Productos" (P mayúscula)
-      const { data: productos } = await supabaseClient.from('Productos').select('*').order('id', { ascending: false });
+      // 2. Cargar lista de productos apuntando correctamente a "Productos" (P mayúscula)
+      const { data: productos, error } = await supabaseClient.from('Productos').select('*').order('id', { ascending: false });
       const lista = document.getElementById('admin-lista-productos');
       lista.innerHTML = '';
+
+      if (error) {
+        console.error('Error al cargar inventario:', error);
+        lista.innerHTML = '<p class="text-xs text-red-500 py-4 text-center">Error al conectar con la tabla Productos.</p>';
+        return;
+      }
 
       if(!productos || productos.length === 0) {
         lista.innerHTML = '<p class="text-xs text-zinc-400 py-4 text-center">No hay productos en inventario.</p>';
@@ -102,8 +114,14 @@
 
     async function actualizarVideo() {
       const url = document.getElementById('video-url-input').value;
-      await supabaseClient.from('configuracion').update({ valor: url }).eq('clave', 'video_hero');
-      alert('¡Video de fondo actualizado con éxito!');
+      if(!url) { alert('Introduce una URL válida'); return; }
+      
+      const { error } = await supabaseClient.from('configuracion').update({ valor: url }).eq('clave', 'video_hero');
+      if (error) {
+        alert('Error al guardar el video: ' + error.message);
+      } else {
+        alert('¡Video de fondo actualizado con éxito! Recarga tu catálogo principal.');
+      }
     }
 
     async function agregarProducto() {
@@ -115,24 +133,30 @@
 
       if(!titulo || !precio) { alert('Mínimo pon el título y el precio'); return; }
 
-      // Cambiado a "Productos" (P mayúscula)
-      await supabaseClient.from('Productos').insert([{ titulo, artista, precio, imagen, etiqueta }]);
-      alert('¡Álbum guardado con éxito!');
+      const { error } = await supabaseClient.from('Productos').insert([{ titulo, artista, precio, imagen, etiqueta }]);
       
-      // Limpiar formulario y recargar lista
-      document.getElementById('p-titulo').value = '';
-      document.getElementById('p-artista').value = '';
-      document.getElementById('p-precio').value = '';
-      document.getElementById('p-imagen').value = '';
-      document.getElementById('p-etiqueta').value = '';
-      cargarDatosPanel();
+      if (error) {
+        alert('Error al guardar producto: ' + error.message);
+      } else {
+        alert('¡Álbum guardado con éxito!');
+        // Limpiar campos
+        document.getElementById('p-titulo').value = '';
+        document.getElementById('p-artista').value = '';
+        document.getElementById('p-precio').value = '';
+        document.getElementById('p-imagen').value = '';
+        document.getElementById('p-etiqueta').value = '';
+        cargarDatosPanel();
+      }
     }
 
     async function eliminarProducto(id) {
       if(confirm('¿Segura que quieres eliminar este artículo del catálogo?')) {
-        // Cambiado a "Productos" (P mayúscula)
-        await supabaseClient.from('Productos').delete().eq('id', id);
-        cargarDatosPanel();
+        const { error } = await supabaseClient.from('Productos').delete().eq('id', id);
+        if (error) {
+          alert('Error al eliminar: ' + error.message);
+        } else {
+          cargarDatosPanel();
+        }
       }
     }
   </script>
