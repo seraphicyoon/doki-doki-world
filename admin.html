@@ -108,7 +108,7 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://zjplkxjcbkxdnepzdwqf.supabase.co';
+    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -201,7 +201,6 @@
       
       let finalImageUrl = editandoImagenUrl;
 
-      // Subir archivo al bucket público "imagenes" si se seleccionó uno
       if(fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const fileExt = file.name.split('.').pop();
@@ -219,12 +218,10 @@
         }
       }
 
-      // Placeholder estético en caso de estar vacío
       if(!finalImageUrl) {
         finalImageUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600';
       }
 
-      // Estructurar el payload limpiamente
       const payload = {
         titulo: document.getElementById('prod-titulo').value,
         artista: document.getElementById('prod-artista').value,
@@ -236,11 +233,10 @@
         imagen: finalImageUrl
       };
 
-      // SOLO añadir la propiedad categoría si el usuario seleccionó una real de la lista
       if (catValue && catValue !== "") {
         payload.categoria = catValue;
       } else {
-        payload.categoria = null; // Fuerza el valor nulo limpio aceptado por la base de datos
+        payload.categoria = null;
       }
 
       let error;
