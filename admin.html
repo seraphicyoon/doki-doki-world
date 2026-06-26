@@ -32,8 +32,8 @@
       <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm space-y-4">
         <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Video de Fondo</h3>
         <div class="space-y-2">
-          <input type="file" id="video-file" class="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-neutral-100 file:text-neutral-700 hover:file:bg-neutral-200">
-          <button onclick="subirVideoHero()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-medium transition pt-3">Subir Video</button>
+          <input type="text" id="video-link-input" placeholder="Pega el enlace .mp4 del video aquí" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          <button onclick="actualizarVideoEnlace()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-medium transition pt-3">Actualizar Video</button>
         </div>
       </div>
 
@@ -84,9 +84,9 @@
           <input type="text" id="prod-etiqueta" placeholder="Etiqueta (Pre-Order, Sale, etc.) o vacío" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
           <textarea id="prod-descripcion" rows="3" placeholder="Descripción del producto..." class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa"></textarea>
           
-          <div class="space-y-1">
-            <label class="block text-[10px] text-neutral-400 font-medium">Imagen de portada (Opcional si estás editando):</label>
-            <input type="file" id="prod-img-file" class="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:bg-neutral-100 hover:file:bg-neutral-200">
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-medium mb-1">Enlace de la Imagen (URL) *</label>
+            <input type="url" id="prod-imagen-url" required placeholder="https://ejemplo.com/imagen.png" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
           </div>
 
           <button type="submit" id="btn-submit-prod" class="w-full bg-dokiDark text-white py-3 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-dokiRosa transition pt-3">Guardar Artículo</button>
@@ -111,8 +111,6 @@
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let editandoImagenUrl = "";
 
     async function inicializarPanel() {
       await cargarCategorias();
@@ -147,7 +145,7 @@
       const nombre = input.value.trim();
 
       const { error } = await supabaseClient.from('categorias').insert([{ nombre }]);
-      if (error) alert("Error o categoría ya existente: " + error.message);
+      if (error) alert("Error: " + error.message);
       
       input.value = '';
       await cargarCategorias();
@@ -196,31 +194,8 @@
       btn.disabled = true; btn.innerText = "PROCESANDO...";
 
       const id = document.getElementById('prod-id').value;
-      const fileInput = document.getElementById('prod-img-file');
       const catValue = document.getElementById('prod-categoria').value;
-      
-      let finalImageUrl = editandoImagenUrl;
-
-      if(fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-        
-        const { data, error: uploadError } = await supabaseClient.storage.from('imagenes').upload(fileName, file);
-        
-        if(!uploadError) {
-          const { data: urlData } = supabaseClient.storage.from('imagenes').getPublicUrl(fileName);
-          if (urlData && urlData.publicUrl) {
-            finalImageUrl = urlData.publicUrl;
-          }
-        } else {
-          console.error("Error al subir archivo a Storage:", uploadError);
-        }
-      }
-
-      if(!finalImageUrl) {
-        finalImageUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600';
-      }
+      const imageUrlInput = document.getElementById('prod-imagen-url').value.trim();
 
       const payload = {
         titulo: document.getElementById('prod-titulo').value,
@@ -230,7 +205,7 @@
         tipo_seccion: document.getElementById('prod-tipo-seccion').value,
         etiqueta: document.getElementById('prod-etiqueta').value,
         descripcion: document.getElementById('prod-descripcion').value,
-        imagen: finalImageUrl
+        imagen: imageUrlInput
       };
 
       if (catValue && catValue !== "") {
@@ -254,7 +229,6 @@
         document.getElementById('form-articulo').reset();
         document.getElementById('prod-id').value = '';
         document.getElementById('form-titulo').innerText = "Añadir Artículo";
-        editandoImagenUrl = "";
       }
       
       btn.disabled = false; btn.innerText = "Guardar Artículo";
@@ -272,7 +246,7 @@
       document.getElementById('prod-tipo-seccion').value = p.tipo_seccion || 'Productos en Stock';
       document.getElementById('prod-etiqueta').value = p.etiqueta || '';
       document.getElementById('prod-descripcion').value = p.descripcion || '';
-      editandoImagenUrl = p.imagen;
+      document.getElementById('prod-imagen-url').value = p.imagen || '';
       
       document.getElementById('form-titulo').scrollIntoView({ behavior: 'smooth' });
     }
@@ -281,6 +255,13 @@
       if(!confirm("¿Deseas dar de baja este producto del catálogo?")) return;
       await supabaseClient.from('productos').delete().eq('id', id);
       await cargarInventario();
+    }
+
+    async function actualizarVideoEnlace() {
+      const link = document.getElementById('video-link-input').value.trim();
+      if(!link) return;
+      await supabaseClient.from('configuracion').upsert({ clave: 'video_hero', valor: link }, { onConflict: 'clave' });
+      alert("¡Video actualizado!");
     }
 
     function cerrarSesionAdmin() {
