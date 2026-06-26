@@ -68,7 +68,7 @@
 
           <div>
             <label class="block text-[9px] font-bold text-neutral-400 uppercase mb-1">Categoría / Grupo:</label>
-            <select id="prod-categoria" required class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+            <select id="prod-categoria" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
               </select>
           </div>
 
@@ -108,7 +108,7 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
+    const SUPABASE_URL = 'https://zjplkxjcbkxdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -193,19 +193,15 @@
     async function guardarArticulo(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-prod');
-      
-      const catSelect = document.getElementById('prod-categoria').value;
-      // Convertir cadena vacía a null para no violar la Foreign Key si la columna acepta nulos
-      const finalCategoria = catSelect === "" ? null : catSelect;
-
       btn.disabled = true; btn.innerText = "PROCESANDO...";
 
       const id = document.getElementById('prod-id').value;
       const fileInput = document.getElementById('prod-img-file');
+      const catValue = document.getElementById('prod-categoria').value;
       
       let finalImageUrl = editandoImagenUrl;
 
-      // Subir archivo al bucket público "imagenes"
+      // Subir archivo al bucket público "imagenes" si se seleccionó uno
       if(fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const fileExt = file.name.split('.').pop();
@@ -220,26 +216,32 @@
           }
         } else {
           console.error("Error al subir archivo a Storage:", uploadError);
-          alert("Error al subir la imagen, se guardará con el respaldo predeterminado.");
         }
       }
 
-      // Si es un producto nuevo y no se subió imagen con éxito, se asigna el placeholder
-      if(!id && !finalImageUrl) {
+      // Placeholder estético en caso de estar vacío
+      if(!finalImageUrl) {
         finalImageUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600';
       }
 
+      // Estructurar el payload limpiamente
       const payload = {
         titulo: document.getElementById('prod-titulo').value,
         artista: document.getElementById('prod-artista').value,
         precio: parseFloat(document.getElementById('prod-precio').value),
         stock: parseInt(document.getElementById('prod-stock').value),
-        categoria: finalCategoria,
         tipo_seccion: document.getElementById('prod-tipo-seccion').value,
         etiqueta: document.getElementById('prod-etiqueta').value,
         descripcion: document.getElementById('prod-descripcion').value,
         imagen: finalImageUrl
       };
+
+      // SOLO añadir la propiedad categoría si el usuario seleccionó una real de la lista
+      if (catValue && catValue !== "") {
+        payload.categoria = catValue;
+      } else {
+        payload.categoria = null; // Fuerza el valor nulo limpio aceptado por la base de datos
+      }
 
       let error;
       if(id) {
