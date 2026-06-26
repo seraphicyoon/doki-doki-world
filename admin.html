@@ -193,6 +193,11 @@
     async function guardarArticulo(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-prod');
+      
+      const catSelect = document.getElementById('prod-categoria').value;
+      // Convertir cadena vacía a null para no violar la Foreign Key si la columna acepta nulos
+      const finalCategoria = catSelect === "" ? null : catSelect;
+
       btn.disabled = true; btn.innerText = "PROCESANDO...";
 
       const id = document.getElementById('prod-id').value;
@@ -215,11 +220,11 @@
           }
         } else {
           console.error("Error al subir archivo a Storage:", uploadError);
-          alert("Error al subir la imagen, se intentará guardar con la imagen por defecto.");
+          alert("Error al subir la imagen, se guardará con el respaldo predeterminado.");
         }
       }
 
-      // Si es un producto nuevo y no se subió imagen con éxito, se asigna el placeholder estético
+      // Si es un producto nuevo y no se subió imagen con éxito, se asigna el placeholder
       if(!id && !finalImageUrl) {
         finalImageUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600';
       }
@@ -229,7 +234,7 @@
         artista: document.getElementById('prod-artista').value,
         precio: parseFloat(document.getElementById('prod-precio').value),
         stock: parseInt(document.getElementById('prod-stock').value),
-        categoria: document.getElementById('prod-categoria').value,
+        categoria: finalCategoria,
         tipo_seccion: document.getElementById('prod-tipo-seccion').value,
         etiqueta: document.getElementById('prod-etiqueta').value,
         descripcion: document.getElementById('prod-descripcion').value,
