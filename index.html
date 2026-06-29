@@ -135,7 +135,7 @@
       wrapper.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;" alt="Fondo Hero" />`;
     }
 
-    // ARMAR TARJETA HTML INDIVIDUAL (MARCA DE AGUA INTEGRADA)
+    // ARMAR TARJETA HTML INDIVIDUAL (MARCA DE AGUA CORREGIDA COMPLETAMENTE)
     function crearTarjetaHTML(prod) {
       const tieneEtiqueta = prod.etiqueta ? true : false;
       const esSale = prod.etiqueta?.toLowerCase() === 'sale';
@@ -147,8 +147,8 @@
             <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
             ${tieneEtiqueta ? `<span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">${prod.etiqueta}</span>` : ''}
             
-            <div class="absolute bottom-3 right-3 backdrop-blur-md bg-white/60 p-1.5 rounded-xl shadow-sm pointer-events-none select-none">
-              <img src="https://zjplkxjcbkqdnepzdwqf.supabase.co/storage/v1/object/public/imagenes/Copia%20de%20CINE%20%20SERVICIOS%20Y%20TRAMITES.png" class="w-5 h-5 object-contain" alt="Doki Watermark">
+            <div class="absolute bottom-3 right-3 pointer-events-none select-none drop-shadow-sm">
+              <img src="https://zjplkxjcbkqdnepzdwqf.supabase.co/storage/v1/object/public/imagenes/Copia%20de%20CINE%20%20SERVICIOS%20Y%20TRAMITES.png" class="w-9 h-9 object-contain opacity-90" alt="Doki Watermark">
             </div>
           </div>
           <div class="space-y-1 px-1">
