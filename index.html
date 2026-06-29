@@ -33,7 +33,6 @@
 </head>
 <body class="bg-dokiBackground text-dokiDark antialiased overflow-x-hidden">
 
-  <!-- ================= HEADER / NAVBAR ================= -->
   <nav class="w-full bg-dokiBackground/80 backdrop-blur-md sticky top-0 z-40 border-b border-neutral-100">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-light">
@@ -48,10 +47,8 @@
       <div class="flex items-center space-x-6 text-sm font-light">
         <a href="categorias.html" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase hidden md:inline-block">Buscar</a>
         
-        <!-- BOTÓN DE CUENTA INTELIGENTE -->
         <a id="nav-auth-btn" href="account/login.html" class="hover:text-dokiRosa transition-colors duration-300 tracking-widest text-xs uppercase font-medium text-neutral-600">Cuenta</a>
         
-        <!-- ICONO DE CARRITO CON CONTADOR -->
         <div onclick="toggleCarrito()" class="relative cursor-pointer hover:text-dokiRosa transition-colors duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
           <span id="cart-count" class="absolute -top-2 -right-2 bg-dokiRosa text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
@@ -60,7 +57,6 @@
     </div>
   </nav>
 
-  <!-- ================= CARRITO LATERAL FLOTANTE ================= -->
   <div id="sidebar-carrito" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-neutral-100">
     <div class="p-6 border-b border-neutral-100 flex items-center justify-between">
       <div>
@@ -82,7 +78,6 @@
   </div>
   <div id="cart-overlay" onclick="toggleCarrito()" class="fixed top-0 left-0 w-full h-full bg-black/20 backdrop-blur-[1px] z-40 hidden"></div>
 
-  <!-- ================= HERO SECTION ================= -->
   <section id="hero-container" class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black">
     <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none flex items-center justify-center"></div>
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/40 backdrop-blur-[1px] z-10 pointer-events-none"></div>
@@ -93,7 +88,6 @@
     </div>
   </section>
 
-  <!-- ================= SECCIÓN 1: PREVENTAS ESPECIALES ================= -->
   <section id="seccion-preventas" class="max-w-7xl mx-auto px-6 py-16 hidden">
     <div class="mb-8">
       <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-1">Próximos Lanzamientos</span>
@@ -102,7 +96,6 @@
     <div id="grid-preventas" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12"></div>
   </section>
 
-  <!-- ================= SECCIÓN 2: ÁLBUMES AUTOGRAFADOS ================= -->
   <section id="seccion-autografiados" class="max-w-7xl mx-auto px-6 py-16 hidden">
     <div class="mb-8">
       <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-1">Ediciones de Colección</span>
@@ -111,7 +104,6 @@
     <div id="grid-autografiados" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12"></div>
   </section>
 
-  <!-- ================= SECCIÓN 3: PRODUCTOS EN STOCK ================= -->
   <section id="seccion-stock" class="max-w-7xl mx-auto px-6 py-16">
     <div class="mb-8">
       <span class="text-[10px] tracking-[0.3em] uppercase font-light text-neutral-400 block mb-1">Entrega Inmediata</span>
@@ -122,18 +114,31 @@
     </div>
   </section>
 
-  <!-- ================= SCRIPTS ================= -->
   <script>
     const SUPABASE_URL = 'https://zjplkxjcbkqdnepzdwqf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // --- LOGICA DETECTA GOOGLE DRIVE EN EL HOME ---
     async function cargarVideoHero() {
       const { data: config } = await supabaseClient.from('configuracion').select('valor').eq('clave', 'video_hero').single();
       const wrapper = document.getElementById('video-wrapper');
       let videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4'; 
       if (config && config.valor) { videoUrl = config.valor; }
-      wrapper.innerHTML = `<video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;"><source src="${videoUrl}" type="video/mp4" /></video>`;
+      
+      if (videoUrl.includes('google.com')) {
+        wrapper.innerHTML = `
+          <div class="absolute w-full h-full top-0 left-0 overflow-hidden pointer-events-none flex items-center justify-center z-0 bg-black">
+            <iframe 
+              src="${videoUrl}" 
+              class="absolute w-[100vw] h-[56.25vw] min-h-[70vh] min-w-[124.44vh] transform scale-125 object-cover pointer-events-none border-0"
+              allow="autoplay">
+            </iframe>
+          </div>
+        `;
+      } else {
+        wrapper.innerHTML = `<video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;"><source src="${videoUrl}" type="video/mp4" /></video>`;
+      }
     }
 
     // ARMAR TARJETA HTML INDIVIDUAL
