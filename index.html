@@ -119,26 +119,16 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- LOGICA DETECTA GOOGLE DRIVE EN EL HOME ---
+    // --- LÓGICA CORREGIDA PARA IMAGEN DE FONDO ---
     async function cargarVideoHero() {
       const { data: config } = await supabaseClient.from('configuracion').select('valor').eq('clave', 'video_hero').single();
       const wrapper = document.getElementById('video-wrapper');
-      let videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41857-large.mp4'; 
-      if (config && config.valor) { videoUrl = config.valor; }
       
-      if (videoUrl.includes('google.com')) {
-        wrapper.innerHTML = `
-          <div class="absolute w-full h-full top-0 left-0 overflow-hidden pointer-events-none flex items-center justify-center z-0 bg-black">
-            <iframe 
-              src="${videoUrl}" 
-              class="absolute w-[100vw] h-[56.25vw] min-h-[70vh] min-w-[124.44vh] transform scale-125 object-cover pointer-events-none border-0"
-              allow="autoplay">
-            </iframe>
-          </div>
-        `;
-      } else {
-        wrapper.innerHTML = `<video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;"><source src="${videoUrl}" type="video/mp4" /></video>`;
-      }
+      // Imagen aesthetic de respaldo por si el campo está vacío
+      let imgUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600'; 
+      if (config && config.valor) { imgUrl = config.valor; }
+      
+      wrapper.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;" alt="Fondo Hero" />`;
     }
 
     // ARMAR TARJETA HTML INDIVIDUAL
@@ -180,7 +170,7 @@
 
       productos.forEach(prod => {
         const htmlCard = crearTarjetaHTML(prod);
-        const seccion = prod.tipo_seccion || 'Productos en Stock';
+        const seccion = prod.tipo_seccion || 'Products en Stock';
 
         if (seccion === 'Preventas') {
           document.getElementById('seccion-preventas').classList.remove('hidden');

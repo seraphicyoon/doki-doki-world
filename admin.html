@@ -30,10 +30,10 @@
     <div class="lg:col-span-4 space-y-6">
       
       <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm space-y-4">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Video de Fondo</h3>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Imagen de Fondo Hero</h3>
         <div class="space-y-2">
-          <input type="text" id="video-link-input" placeholder="Pega el enlace de compartir de Google Drive aquí" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
-          <button onclick="actualizarVideoEnlace()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-medium transition pt-3">Actualizar Video</button>
+          <input type="url" id="video-link-input" placeholder="Pega la URL de la imagen de fondo aquí" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          <button onclick="actualizarVideoEnlace()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-medium transition pt-3">Actualizar Imagen</button>
         </div>
       </div>
 
@@ -257,28 +257,17 @@
       await cargarInventario();
     }
 
-    // --- CONVERTIDOR DE ENLACES DE GOOGLE DRIVE ---
-    function transformarEnlaceDrive(url) {
-      const regExp = /\/d\/([a-zA-Z0-9-_]+)/;
-      const match = url.match(regExp);
-      if (match && match[1]) {
-        return `https://docs.google.com/uc?export=download&id=${match[1]}`;
-      }
-      return url;
-    }
-
+    // --- LOGICA DE ACTUALIZACIÓN DE IMAGEN HERO ---
     async function actualizarVideoEnlace() {
       const link = document.getElementById('video-link-input').value.trim();
-      if(!link) { alert("Por favor pega un enlace primero."); return; }
+      if(!link) { alert("Por favor pega un enlace de imagen válido."); return; }
       
-      const enlaceDirecto = transformarEnlaceDrive(link);
-      
-      const { error } = await supabaseClient.from('configuracion').upsert({ clave: 'video_hero', valor: enlaceDirecto }, { onConflict: 'clave' });
+      const { error } = await supabaseClient.from('configuracion').upsert({ clave: 'video_hero', valor: link }, { onConflict: 'clave' });
       
       if(error) {
         alert("Error al guardar la configuración: " + error.message);
       } else {
-        alert("¡Video de Google Drive guardado correctamente! ✨🎬");
+        alert("¡Imagen de fondo actualizada con éxito! 🌸✨");
         document.getElementById('video-link-input').value = "";
       }
     }
