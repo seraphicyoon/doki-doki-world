@@ -32,7 +32,7 @@
       <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm space-y-4">
         <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Video de Fondo</h3>
         <div class="space-y-2">
-          <input type="text" id="video-link-input" placeholder="Pega el enlace .mp4 del video aquí" class="w-full p-2.5 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa">
+          <input type="file" id="video-file-input" accept="video/mp4" class="w-full p-2 border rounded-xl text-xs bg-neutral-50/50 focus:outline-none focus:border-dokiRosa text-neutral-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-medium file:bg-neutral-100 file:text-neutral-700 hover:file:bg-neutral-200">
           <button onclick="actualizarVideoEnlace()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-medium transition pt-3">Actualizar Video</button>
         </div>
       </div>
@@ -257,19 +257,53 @@
       await cargarInventario();
     }
 
-    // --- LÓGICA DEL VIDEO TOTALMENTE RECONECTADA ---
+    // --- SUBIR EL ARCHIVO MP4 AL STORAGE DE SUPABASE ---
     async function actualizarVideoEnlace() {
-      const link = document.getElementById('video-link-input').value.trim();
-      if(!link) { alert("Por favor pega un enlace válido primero."); return; }
+      const fileInput = document.getElementById('video-file-input');
+      const file = fileInput.files[0];
       
-      const { error } = await supabaseClient.from('configuracion').upsert({ clave: 'video_hero', valor: link }, { onConflict: 'clave' });
-      
-      if(error) {
-        alert("Error al guardar el video en la configuración: " + error.message);
-      } else {
-        alert("¡Video de fondo actualizado con éxito! ✨");
-        document.getElementById('video-link-input').value = "";
+      if (!file) { 
+        alert("Por favor selecciona un archivo de video (.mp4) de tu equipo primero."); 
+        return; 
       }
+
+      const btn = document.querySelector("button[onclick='actualizarVideoEnlace()']");
+      btn.disabled = true;
+      btn.innerText = "SUBIENDO VIDEO...";
+
+      // Nombre único para el archivo del video
+      const fileExt = file.name.split('.').pop();
+      const fileName = `hero_video_${Date.now()}.${fileExt}`;
+
+      // 1. Subir el archivo real al bucket de storage llamado 'videos' (Asegúrate de tener este bucket público en tu Supabase)
+      const { data, error: uploadError } = await supabaseClient.storage
+        .from('videos')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+      if (uploadError) {
+        alert("Error al subir el archivo al almacenamiento: " + uploadError.message);
+        btn.disabled = false;
+        btn.innerText = "Actualizar Video";
+        return;
+      }
+
+      // 2. Obtener la URL pública del archivo que acabamos de subir
+      const { data: { publicUrl } } = supabaseClient.storage.from('videos').getPublicUrl(fileName);
+
+      // 3. Guardar esa URL pública en tu tabla 'configuracion'
+      const { error: dbError } = await supabaseClient
+        .from('configuracion')
+        .upsert({ clave: 'video_hero', valor: publicUrl }, { onConflict: 'clave' });
+      
+      if (dbError) {
+        alert("Error al actualizar la configuración: " + dbError.message);
+      } else {
+        alert("¡Video subido y actualizado con éxito en la web! ✨");
+        fileInput.value = "";
+      }
+
+      btn.disabled = false;
+      btn.innerText = "Actualizar Video";
     }
 
     function cerrarSesionAdmin() {
