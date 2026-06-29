@@ -81,6 +81,11 @@
   <section id="hero-container" class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black">
     <div id="video-wrapper" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none flex items-center justify-center"></div>
     <div class="absolute top-0 left-0 w-full h-full bg-dokiDark/40 backdrop-blur-[1px] z-10 pointer-events-none"></div>
+    
+    <div class="absolute top-4 left-4 md:top-8 md:left-8 z-20 pointer-events-none select-none">
+      <img src="https://zjplkxjcbkqdnepzdwqf.supabase.co/storage/v1/object/public/imagenes/Copia%20de%20CINE%20%20SERVICIOS%20Y%20TRAMITES.png" class="w-32 md:w-44 h-auto object-contain opacity-85 filter drop-shadow-md" alt="Doki Doki Logo Layer">
+    </div>
+
     <div class="relative z-20 text-center text-white px-4 max-w-2xl pointer-events-auto">
       <h1 class="font-serif italic text-4xl md:text-6xl tracking-wide mb-3">Doki Doki World</h1>
       <p class="text-xs md:text-sm tracking-[0.2em] uppercase font-light text-neutral-200 mb-8">Tu tienda mexicana de K-Pop · De fans para fans</p>
@@ -119,19 +124,18 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxreGpjYmtxZG5lcHpkd3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTc0NTgsImV4cCI6MjA5Nzk3MzQ1OH0.fB1GNgt3qkzmar8lKjeHU3S4s6hOwNM_BL_qw4LHNzE';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- LÓGICA CORREGIDA PARA IMAGEN DE FONDO ---
+    // --- LÓGICA PARA IMAGEN DE FONDO ---
     async function cargarVideoHero() {
       const { data: config } = await supabaseClient.from('configuracion').select('valor').eq('clave', 'video_hero').single();
       const wrapper = document.getElementById('video-wrapper');
       
-      // Imagen aesthetic de respaldo por si el campo está vacío
       let imgUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600'; 
       if (config && config.valor) { imgUrl = config.valor; }
       
       wrapper.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover pointer-events-none" style="min-height: 70vh; width: 100vw; object-fit: cover;" alt="Fondo Hero" />`;
     }
 
-    // ARMAR TARJETA HTML INDIVIDUAL
+    // ARMAR TARJETA HTML INDIVIDUAL (MARCA DE AGUA INTEGRADA)
     function crearTarjetaHTML(prod) {
       const tieneEtiqueta = prod.etiqueta ? true : false;
       const esSale = prod.etiqueta?.toLowerCase() === 'sale';
@@ -142,6 +146,10 @@
           <div class="relative aspect-square w-full overflow-hidden bg-neutral-100 rounded-2xl mb-4 shadow-sm group-hover:shadow-md transition-all duration-300">
             <img src="${prod.imagen}" alt="${prod.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"/>
             ${tieneEtiqueta ? `<span class="absolute top-3 left-3 backdrop-blur-sm text-[9px] font-medium tracking-widest uppercase px-3 py-1 rounded-full shadow-sm ${colorEtiqueta}">${prod.etiqueta}</span>` : ''}
+            
+            <div class="absolute bottom-3 right-3 backdrop-blur-md bg-white/60 p-1.5 rounded-xl shadow-sm pointer-events-none select-none">
+              <img src="https://zjplkxjcbkqdnepzdwqf.supabase.co/storage/v1/object/public/imagenes/Copia%20de%20CINE%20%20SERVICIOS%20Y%20TRAMITES.png" class="w-5 h-5 object-contain" alt="Doki Watermark">
+            </div>
           </div>
           <div class="space-y-1 px-1">
             <p class="text-[10px] tracking-widest uppercase font-light text-neutral-400">${prod.artista || 'K-POP'} ${prod.categoria ? `· ${prod.categoria}` : ''}</p>
