@@ -257,11 +257,19 @@
       await cargarInventario();
     }
 
+    // --- LÓGICA DEL VIDEO TOTALMENTE RECONECTADA ---
     async function actualizarVideoEnlace() {
       const link = document.getElementById('video-link-input').value.trim();
-      if(!link) return;
-      await supabaseClient.from('configuracion').upsert({ clave: 'video_hero', valor: link }, { onConflict: 'clave' });
-      alert("¡Video actualizado!");
+      if(!link) { alert("Por favor pega un enlace válido primero."); return; }
+      
+      const { error } = await supabaseClient.from('configuracion').upsert({ clave: 'video_hero', valor: link }, { onConflict: 'clave' });
+      
+      if(error) {
+        alert("Error al guardar el video en la configuración: " + error.message);
+      } else {
+        alert("¡Video de fondo actualizado con éxito! ✨");
+        document.getElementById('video-link-input').value = "";
+      }
     }
 
     function cerrarSesionAdmin() {
